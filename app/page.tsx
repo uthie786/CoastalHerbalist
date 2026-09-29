@@ -303,7 +303,7 @@ function Logo({ size = 40 }: { size?: number }) {
       width={size}
       height={size}
       onError={() => setOk(false)}
-      className="rounded-full object-cover ring-1 ring-[#52796F]/50"
+      className="rounded-full object-cover ring-1 ring-[#52796F]/50 shadow-[0_0_0_3px_rgba(15,41,30,0.85),0_6px_24px_-6px_rgba(82,121,111,0.6)]"
       style={{ width: size, height: size }}
     />
   );
@@ -549,6 +549,38 @@ function SmokeCanvas() {
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
 }
 
+function HeroEmblem({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative aspect-square ${className}`} aria-hidden="true">
+      <div
+        className="absolute -inset-[12%] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(82,121,111,0.5) 0%, rgba(82,121,111,0.12) 45%, rgba(15,41,30,0) 70%)",
+        }}
+      />
+      <div className="absolute inset-0 rounded-full border border-[#52796F]/25" />
+      <div className="absolute inset-0 animate-[spin_80s_linear_infinite] motion-reduce:animate-none">
+        <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4A373] shadow-[0_0_12px_rgba(212,163,115,0.8)]" />
+      </div>
+      <div className="absolute inset-[8%] rounded-full border border-[#D4A373]/20" />
+      <motion.div
+        className="absolute inset-[15%]"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo.png"
+          alt=""
+          className="h-full w-full rounded-full object-cover shadow-[0_0_0_6px_rgba(15,41,30,0.9),0_0_0_7px_rgba(82,121,111,0.45),0_30px_80px_-20px_rgba(0,0,0,0.8),0_0_90px_-10px_rgba(82,121,111,0.55)]"
+        />
+      </motion.div>
+    </div>
+  );
+}
+
 function Hero({ status }: { status: { open: boolean; label: string } | null }) {
   return (
     <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0F291E]">
@@ -560,21 +592,22 @@ function Hero({ status }: { status: { open: boolean; label: string } | null }) {
         }}
       />
       <SmokeCanvas />
-      <LeafSilhouette className="pointer-events-none absolute -right-10 top-24 h-80 w-40 rotate-[24deg] text-[#52796F]/50 sm:h-[26rem] sm:w-52" />
+      <LeafSilhouette className="pointer-events-none absolute -right-10 top-24 h-80 w-40 rotate-[24deg] text-[#52796F]/50 sm:h-[26rem] sm:w-52 lg:hidden" />
       <LeafSilhouette className="pointer-events-none absolute -left-12 bottom-10 h-64 w-32 -rotate-[32deg] text-[#52796F]/30" />
 
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-24 pt-32">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-24 pt-32 lg:grid-cols-[1.35fr_1fr]">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-3xl"
         >
+          <HeroEmblem className="mb-8 w-28 sm:w-32 lg:hidden" />
           <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#52796F]/40 bg-[#0F291E]/40 px-4 py-1.5 text-sm text-[#F8F9FA]/75 backdrop-blur">
             <MapPin className="h-4 w-4 text-[#D4A373]" />
             Marine Drive, Margate
           </p>
-          <h1 className="font-display text-5xl leading-[1.05] text-[#F8F9FA] sm:text-6xl lg:text-7xl">
+          <h1 className="font-display text-5xl leading-[1.05] text-[#F8F9FA] sm:text-6xl lg:text-[4.25rem]">
             Elevated Coastal Wellness &amp; Botanical Craft
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#F8F9FA]/70">
@@ -620,6 +653,8 @@ function Hero({ status }: { status: { open: boolean; label: string } | null }) {
             )}
           </div>
         </motion.div>
+
+        <HeroEmblem className="mx-auto hidden w-full max-w-[24rem] lg:block" />
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#1A1E1C]" />
