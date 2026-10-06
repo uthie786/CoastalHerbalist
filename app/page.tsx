@@ -154,6 +154,8 @@ const MENU: MenuGroup[] = [
 /* Smoke burst (used to reveal the menu)                               */
 /* ------------------------------------------------------------------ */
 
+const MAX_PUFFS = 160;
+
 function useSmokeBurst() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<{
@@ -209,7 +211,9 @@ function useSmokeBurst() {
   const puff = (x: number, y: number, count = 70, spread = 600, ySpread = 40) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const s = stateRef.current;
-    for (let i = 0; i < count; i++) {
+    // Hard cap so rapid clicking can't pile up particles.
+    const n = Math.min(count, MAX_PUFFS - s.ps.length);
+    for (let i = 0; i < n; i++) {
       const tint = Math.random();
       const ang = Math.random() * Math.PI * 2;
       const speed = 0.6 + Math.random() * 2.6;
@@ -966,6 +970,8 @@ function MenuSection() {
   const [active, setActive] = useState(MENU[0].id);
   const panelRef = useRef<HTMLDivElement>(null);
   const { canvasRef, puff } = useSmokeBurst();
+  const followUps = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const lastSmoke = useRef(0);
   const group = MENU.find((g) => g.id === active) ?? MENU[0];
 
   const puffFrom = (el: HTMLElement | null, count?: number, spread?: number) => {
@@ -976,20 +982,31 @@ function MenuSection() {
     puff(r.left + r.width / 2 - p.left, r.top + r.height / 2 - p.top, count, spread ?? p.width * 0.8);
   };
 
+  useEffect(() => () => followUps.current.forEach(clearTimeout), []);
+
   const toggle = (e: { currentTarget: HTMLElement }) => {
+    followUps.current.forEach(clearTimeout);
+    followUps.current = [];
+    setOpen((o) => !o);
+
+    // Cooldown: rapid toggling still opens/closes, but only releases smoke once in a while.
+    const now = performance.now();
+    if (now - lastSmoke.current < 700) return;
+    lastSmoke.current = now;
+
     puffFrom(e.currentTarget, open ? 40 : 60);
     if (!open) {
       // Follow the panel down as it expands so the smoke clears over the whole menu.
       for (let i = 1; i <= 4; i++) {
-        setTimeout(() => {
+        const id = setTimeout(() => {
           const panel = panelRef.current;
           if (!panel) return;
           const h = panel.clientHeight;
           puff(panel.clientWidth / 2, h * 0.6, 26, panel.clientWidth * 0.9, h * 0.7);
         }, i * 140);
+        followUps.current.push(id);
       }
     }
-    setOpen((o) => !o);
   };
 
   return (
