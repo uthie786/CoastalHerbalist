@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Leaf,
@@ -17,6 +17,13 @@ import {
   Volume2,
   VolumeX,
   Scale,
+  Flame,
+  Droplets,
+  Cookie,
+  HandHeart,
+  Gift,
+  Cigarette,
+  Store,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -47,151 +54,183 @@ const glass =
   "bg-white/[0.035] backdrop-blur-xl border border-[#52796F]/30 shadow-[inset_0_1px_0_rgba(248,249,250,0.06)]";
 
 /* ------------------------------------------------------------------ */
-/* Menu data (sample items: replace with live stock)                   */
+/* Menu data: product types only. Strains and prices are in store.     */
 /* ------------------------------------------------------------------ */
 
-const CATEGORIES = [
-  "Botanical Flower & Pre-rolls",
-  "Artisanal Oils & Tinctures",
-  "Topicals & Salves",
-  "Edibles & Infusions",
-] as const;
-
-type Category = (typeof CATEGORIES)[number];
-
-interface MenuItem {
+interface MenuType {
   name: string;
-  category: Category;
-  thc: string;
-  cbd: string;
-  terpenes: string[];
-  price: number;
-  unit: string;
   note: string;
 }
 
-const MENU: MenuItem[] = [
+interface MenuGroup {
+  id: string;
+  title: string;
+  blurb: string;
+  icon: ReactNode;
+  types: MenuType[];
+}
+
+const MENU: MenuGroup[] = [
   {
-    name: "Lawrence Rocks Haze",
-    category: "Botanical Flower & Pre-rolls",
-    thc: "22%",
-    cbd: "<1%",
-    terpenes: ["Limonene", "Terpinolene", "Pinene"],
-    price: 150,
-    unit: "per gram",
-    note: "Bright citrus and pine. A daytime sativa-leaning flower.",
+    id: "flower",
+    title: "Flower",
+    blurb: "Graded by how it's grown. Ask at the counter to see and smell what's on the shelf.",
+    icon: <Leaf className="h-4 w-4" />,
+    types: [
+      { name: "Tunnel", note: "Sun-grown under poly tunnels. Natural light, weather protection, everyday value." },
+      { name: "Greenhouse", note: "Sun-fed with a controlled climate. Full-flavoured and well balanced." },
+      { name: "Indoor", note: "Grown under lights in a fully controlled room. Dense, frosty, top shelf." },
+      { name: "Hydro", note: "Soil-free hydroponic grows for a clean burn and strong potency." },
+    ],
   },
   {
-    name: "Durban Poison Heritage",
-    category: "Botanical Flower & Pre-rolls",
-    thc: "18%",
-    cbd: "<1%",
-    terpenes: ["Terpinolene", "Ocimene", "Myrcene"],
-    price: 120,
-    unit: "per gram",
-    note: "The KZN classic. Sweet anise with a clean, clear finish.",
+    id: "prerolls",
+    title: "Pre-rolls",
+    blurb: "Ready-rolled in unbleached paper, in the same four grow classes as our flower.",
+    icon: <Cigarette className="h-4 w-4" />,
+    types: [
+      { name: "Tunnel pre-rolls", note: "Easy-going everyday joints." },
+      { name: "Greenhouse pre-rolls", note: "A step up in flavour and smoothness." },
+      { name: "Indoor pre-rolls", note: "Top-shelf indoor flower, rolled for you." },
+      { name: "Hydro pre-rolls", note: "Clean, potent hydro in a ready-to-go roll." },
+    ],
   },
   {
-    name: "Tidepool OG Pre-rolls",
-    category: "Botanical Flower & Pre-rolls",
-    thc: "20%",
-    cbd: "<1%",
-    terpenes: ["Myrcene", "Caryophyllene"],
-    price: 180,
-    unit: "2 × 0.75 g",
-    note: "Earthy, peppery and slow. Rolled in unbleached paper.",
+    id: "dab",
+    title: "Dab bar",
+    blurb: "Concentrates served at the counter by staff who'll walk you through it.",
+    icon: <Flame className="h-4 w-4" />,
+    types: [
+      { name: "Dab hits", note: "Single hits served in store. First time? We'll start you small." },
+      { name: "Concentrates", note: "Rosin, wax and shatter to take home, when available." },
+    ],
   },
   {
-    name: "Balance 1:1 Tincture",
-    category: "Artisanal Oils & Tinctures",
-    thc: "10 mg/ml",
-    cbd: "10 mg/ml",
-    terpenes: ["Linalool", "Myrcene"],
-    price: 650,
-    unit: "30 ml",
-    note: "Even-ratio drops in MCT oil. Start with a quarter dropper.",
+    id: "oils",
+    title: "Oils & tinctures",
+    blurb: "Measured drops for steady, smoke-free dosing.",
+    icon: <Droplets className="h-4 w-4" />,
+    types: [
+      { name: "CBD oils", note: "Broad-spectrum CBD in a range of strengths." },
+      { name: "THC:CBD tinctures", note: "Balanced and CBD-forward ratios for day or evening." },
+    ],
   },
   {
-    name: "Calm Coast CBD Oil 10%",
-    category: "Artisanal Oils & Tinctures",
-    thc: "<0.1%",
-    cbd: "1000 mg",
-    terpenes: ["Limonene", "Linalool"],
-    price: 550,
-    unit: "10 ml",
-    note: "Broad-spectrum CBD with a light lemon-lavender profile.",
+    id: "edibles",
+    title: "Edibles & infusions",
+    blurb: "Slow and long-lasting. Wait two hours before having more.",
+    icon: <Cookie className="h-4 w-4" />,
+    types: [
+      { name: "Gummies", note: "Pre-dosed pieces, easy to portion." },
+      { name: "Chocolates", note: "Infused bars, portioned by the square." },
+      { name: "Teas & infusions", note: "Herbal blends with hemp-derived CBD." },
+    ],
   },
   {
-    name: "Night Tide 1:4",
-    category: "Artisanal Oils & Tinctures",
-    thc: "5 mg/ml",
-    cbd: "20 mg/ml",
-    terpenes: ["Myrcene", "Linalool"],
-    price: 590,
-    unit: "30 ml",
-    note: "CBD-forward evening blend with chamomile extract.",
+    id: "topicals",
+    title: "Topicals & salves",
+    blurb: "Applied to the skin. Non-intoxicating.",
+    icon: <HandHeart className="h-4 w-4" />,
+    types: [
+      { name: "Balms & salves", note: "Rich balms for dry or overworked skin." },
+      { name: "Muscle rubs", note: "Cooling rubs for after the surf or the gym." },
+    ],
   },
   {
-    name: "Sea Salt & Arnica Balm",
-    category: "Topicals & Salves",
-    thc: "0%",
-    cbd: "500 mg",
-    terpenes: ["Caryophyllene", "Humulene"],
-    price: 320,
-    unit: "50 ml",
-    note: "Beeswax balm with arnica and coastal sea salt.",
-  },
-  {
-    name: "Rooibos Recovery Salve",
-    category: "Topicals & Salves",
-    thc: "0%",
-    cbd: "300 mg",
-    terpenes: ["Caryophyllene", "Pinene"],
-    price: 260,
-    unit: "30 ml",
-    note: "Rooibos and shea butter for dry, overworked skin.",
-  },
-  {
-    name: "Cooling Muscle Rub 1:3",
-    category: "Topicals & Salves",
-    thc: "100 mg",
-    cbd: "300 mg",
-    terpenes: ["Caryophyllene", "Eucalyptol"],
-    price: 290,
-    unit: "60 ml",
-    note: "Menthol and eucalyptus rub for after the surf.",
-  },
-  {
-    name: "Rooibos & Honey Gummies",
-    category: "Edibles & Infusions",
-    thc: "5 mg each",
-    cbd: "5 mg each",
-    terpenes: ["Limonene"],
-    price: 220,
-    unit: "10 pieces",
-    note: "Local honey and rooibos. Wait two hours before a second piece.",
-  },
-  {
-    name: "Chai Calm Tea Blend",
-    category: "Edibles & Infusions",
-    thc: "0%",
-    cbd: "10 mg per bag",
-    terpenes: ["Caryophyllene", "Linalool"],
-    price: 180,
-    unit: "20 bags",
-    note: "Cardamom, ginger and cinnamon with hemp-derived CBD.",
-  },
-  {
-    name: "Dark Chocolate Macadamia",
-    category: "Edibles & Infusions",
-    thc: "10 mg",
-    cbd: "10 mg",
-    terpenes: ["Myrcene"],
-    price: 150,
-    unit: "4-square bar",
-    note: "70% cacao with toasted KZN macadamias.",
+    id: "accessories",
+    title: "Accessories & curios",
+    blurb: "Everything you need to roll, grind, smoke and gift.",
+    icon: <Gift className="h-4 w-4" />,
+    types: [
+      { name: "Rolling papers & cones", note: "Unbleached, hemp and flavoured papers, tips and cones." },
+      { name: "Herb grinders", note: "Pocket grinders to multi-chamber metal ones." },
+      { name: "Pipes & glass", note: "Hand pipes, bongs and bubblers." },
+      { name: "Curios & gifts", note: "Ashtrays, stash jars, lighters and local keepsakes." },
+    ],
   },
 ];
+
+/* ------------------------------------------------------------------ */
+/* Smoke burst (used to reveal the menu)                               */
+/* ------------------------------------------------------------------ */
+
+function useSmokeBurst() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stateRef = useRef<{
+    ps: { x: number; y: number; vx: number; vy: number; r: number; gr: number; a: number; life: number; max: number; col: string }[];
+    raf: number;
+  }>({ ps: [], raf: 0 });
+
+  useEffect(() => {
+    const s = stateRef.current;
+    return () => cancelAnimationFrame(s.raf);
+  }, []);
+
+  const loop = () => {
+    const canvas = canvasRef.current;
+    const s = stateRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
+    if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
+    }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of s.ps) {
+      p.life += 1 / 60;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.97;
+      p.vy = p.vy * 0.97 - 0.02;
+      p.r += p.gr;
+      const k = p.life / p.max;
+      const a = p.a * (k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85);
+      if (a <= 0) continue;
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+      g.addColorStop(0, `rgba(${p.col},${a})`);
+      g.addColorStop(0.55, `rgba(${p.col},${a * 0.45})`);
+      g.addColorStop(1, `rgba(${p.col},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    s.ps = s.ps.filter((p) => p.life < p.max);
+    s.raf = s.ps.length ? requestAnimationFrame(loop) : 0;
+  };
+
+  /** Releases a cloud of smoke around (x, y), in canvas CSS pixels, spread across `spread` × `ySpread` px. */
+  const puff = (x: number, y: number, count = 70, spread = 600, ySpread = 40) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const s = stateRef.current;
+    for (let i = 0; i < count; i++) {
+      const tint = Math.random();
+      const ang = Math.random() * Math.PI * 2;
+      const speed = 0.6 + Math.random() * 2.6;
+      s.ps.push({
+        x: x + (Math.random() - 0.5) * spread,
+        y: y + (Math.random() - 0.5) * ySpread,
+        vx: Math.cos(ang) * speed,
+        vy: Math.sin(ang) * speed * 0.6 - 0.8,
+        r: 30 + Math.random() * 50,
+        gr: 0.6 + Math.random() * 1.2,
+        a: 0.12 + Math.random() * 0.16,
+        life: 0,
+        max: 1.4 + Math.random() * 1.3,
+        col: tint > 0.8 ? "212,163,115" : tint > 0.4 ? "140,170,160" : "230,236,233",
+      });
+    }
+    if (!s.raf) s.raf = requestAnimationFrame(loop);
+  };
+
+  return { canvasRef, puff };
+}
 
 /* ------------------------------------------------------------------ */
 /* Research data                                                       */
@@ -473,80 +512,331 @@ function Nav() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Hero with drifting smoke                                            */
+/* Hero with interactive fluid smoke                                   */
 /* ------------------------------------------------------------------ */
 
-function SmokeCanvas() {
+/**
+ * A small stable-fluids solver (Stam 1999) on a coarse grid. The canvas is drawn at grid
+ * resolution and stretched by CSS, which gives the smoke its soft edges for free.
+ * Moving the pointer pushes and seeds smoke; tapping or clicking releases a puff.
+ */
+function FluidSmoke({ targetRef }: { targetRef: RefObject<HTMLElement> }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas) return;
+    const target = targetRef.current;
+    if (!canvas || !target) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    type P = { x: number; y: number; r: number; vx: number; vy: number; a: number; tint: number; phase: number };
-    let w = 0;
-    let h = 0;
-    let raf = 0;
-    let t = 0;
-    let ps: P[] = [];
 
-    const spawn = (anywhere: boolean): P => ({
-      x: Math.random() * w,
-      y: anywhere ? Math.random() * h : h + 120,
-      r: 70 + Math.random() * 160,
-      vx: (Math.random() - 0.3) * 0.25,
-      vy: -(0.12 + Math.random() * 0.35),
-      a: 0.03 + Math.random() * 0.06,
-      tint: Math.random(),
-      phase: Math.random() * Math.PI * 2,
-    });
+    let NX = 0;
+    let NY = 0;
+    let S = 0; // row stride including the 1-cell border
+    let u = new Float32Array(0);
+    let v = new Float32Array(0);
+    let u0 = new Float32Array(0);
+    let v0 = new Float32Array(0);
+    let d = new Float32Array(0); // smoke density
+    let d0 = new Float32Array(0);
+    let k = new Float32Array(0); // warm (ochre) share of the smoke
+    let k0 = new Float32Array(0);
+    let curl = new Float32Array(0);
+    let img: ImageData | null = null;
+    let scale = 1;
+
+    const IX = (i: number, j: number) => i + j * S;
 
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
-      canvas.width = Math.floor(w * dpr);
-      canvas.height = Math.floor(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      if (ps.length === 0) {
-        const count = Math.round(Math.min(44, Math.max(16, w / 32)));
-        ps = Array.from({ length: count }, () => spawn(true));
+      const w = target.clientWidth;
+      const h = target.clientHeight;
+      NX = Math.max(40, Math.min(150, Math.round(w / 9)));
+      scale = w / NX;
+      NY = Math.max(30, Math.round(h / scale));
+      S = NX + 2;
+      const n = S * (NY + 2);
+      [u, v, u0, v0, d, d0, k, k0, curl] = Array.from({ length: 9 }, () => new Float32Array(n));
+      canvas.width = NX;
+      canvas.height = NY;
+      img = ctx.createImageData(NX, NY);
+    };
+
+    // b: 0 = scalar, 1 = horizontal velocity, 2 = vertical velocity
+    const bound = (b: number, x: Float32Array) => {
+      for (let i = 1; i <= NX; i++) {
+        x[IX(i, 0)] = b === 2 ? -x[IX(i, 1)] : x[IX(i, 1)];
+        x[IX(i, NY + 1)] = b === 2 ? -x[IX(i, NY)] : x[IX(i, NY)];
+      }
+      for (let j = 1; j <= NY; j++) {
+        x[IX(0, j)] = b === 1 ? -x[IX(1, j)] : x[IX(1, j)];
+        x[IX(NX + 1, j)] = b === 1 ? -x[IX(NX, j)] : x[IX(NX, j)];
       }
     };
 
-    const draw = () => {
-      t += 0.005;
-      ctx.clearRect(0, 0, w, h);
-      for (const p of ps) {
-        p.x += p.vx + Math.sin(t * 2 + p.phase) * 0.15;
-        p.y += p.vy;
-        if (p.y + p.r < -40 || p.x - p.r > w + 60 || p.x + p.r < -60) Object.assign(p, spawn(false));
-        const col = p.tint > 0.82 ? "212,163,115" : p.tint > 0.4 ? "82,121,111" : "248,249,250";
-        const a = p.a * (0.7 + 0.3 * Math.sin(t * 3 + p.phase));
-        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
-        g.addColorStop(0, `rgba(${col},${a})`);
-        g.addColorStop(1, `rgba(${col},0)`);
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fill();
+    const advect = (b: number, dst: Float32Array, src: Float32Array, dt: number) => {
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          let x = i - dt * u[id];
+          let y = j - dt * v[id];
+          x = Math.max(0.5, Math.min(NX + 0.5, x));
+          y = Math.max(0.5, Math.min(NY + 0.5, y));
+          const i0 = x | 0;
+          const j0 = y | 0;
+          const s1 = x - i0;
+          const t1 = y - j0;
+          const a = IX(i0, j0);
+          dst[id] =
+            (1 - s1) * ((1 - t1) * src[a] + t1 * src[a + S]) +
+            s1 * ((1 - t1) * src[a + 1] + t1 * src[a + S + 1]);
+        }
       }
-      if (!reduce) raf = requestAnimationFrame(draw);
+      bound(b, dst);
+    };
+
+    const project = () => {
+      const p = u0;
+      const div = v0;
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          div[id] = -0.5 * (u[id + 1] - u[id - 1] + v[id + S] - v[id - S]);
+          p[id] = 0;
+        }
+      }
+      bound(0, div);
+      bound(0, p);
+      for (let it = 0; it < 14; it++) {
+        for (let j = 1; j <= NY; j++) {
+          for (let i = 1; i <= NX; i++) {
+            const id = IX(i, j);
+            p[id] = (div[id] + p[id - 1] + p[id + 1] + p[id - S] + p[id + S]) / 4;
+          }
+        }
+        bound(0, p);
+      }
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          u[id] -= 0.5 * (p[id + 1] - p[id - 1]);
+          v[id] -= 0.5 * (p[id + S] - p[id - S]);
+        }
+      }
+      bound(1, u);
+      bound(2, v);
+    };
+
+    // Vorticity confinement keeps the small swirls that make it read as smoke.
+    const confine = (eps: number) => {
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          curl[id] = 0.5 * (v[id + 1] - v[id - 1] - (u[id + S] - u[id - S]));
+        }
+      }
+      for (let j = 2; j < NY; j++) {
+        for (let i = 2; i < NX; i++) {
+          const id = IX(i, j);
+          const gx = 0.5 * (Math.abs(curl[id + 1]) - Math.abs(curl[id - 1]));
+          const gy = 0.5 * (Math.abs(curl[id + S]) - Math.abs(curl[id - S]));
+          const len = Math.hypot(gx, gy) + 1e-5;
+          u[id] += eps * (gy / len) * curl[id];
+          v[id] -= eps * (gx / len) * curl[id];
+        }
+      }
+    };
+
+    const splat = (cx: number, cy: number, fx: number, fy: number, amount: number, warm: number, radius: number) => {
+      const r = Math.ceil(radius * 2.5);
+      const ci = Math.round(cx);
+      const cj = Math.round(cy);
+      for (let j = Math.max(1, cj - r); j <= Math.min(NY, cj + r); j++) {
+        for (let i = Math.max(1, ci - r); i <= Math.min(NX, ci + r); i++) {
+          const dx = i - cx;
+          const dy = j - cy;
+          const g = Math.exp(-(dx * dx + dy * dy) / (radius * radius));
+          if (g < 0.01) continue;
+          const id = IX(i, j);
+          u[id] += fx * g;
+          v[id] += fy * g;
+          const add = amount * g;
+          k[id] = (k[id] * d[id] + warm * add) / (d[id] + add + 1e-6);
+          d[id] = Math.min(3, d[id] + add);
+        }
+      }
+    };
+
+    /* ---------- input ---------- */
+    const pointer = { x: -1, y: -1, px: -1, py: -1, moved: false };
+    const toGrid = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: ((e.clientX - r.left) / r.width) * NX + 0.5, y: ((e.clientY - r.top) / r.height) * NY + 0.5 };
+    };
+    const onMove = (e: PointerEvent) => {
+      const g = toGrid(e);
+      if (pointer.x < 0) {
+        pointer.px = g.x;
+        pointer.py = g.y;
+      }
+      pointer.x = g.x;
+      pointer.y = g.y;
+      pointer.moved = true;
+    };
+    const onLeave = () => {
+      pointer.x = -1;
+      pointer.moved = false;
+    };
+    const onDown = (e: PointerEvent) => {
+      const g = toGrid(e);
+      for (let a = 0; a < 8; a++) {
+        const ang = (a / 8) * Math.PI * 2;
+        splat(g.x, g.y, Math.cos(ang) * 6, Math.sin(ang) * 6 - 1, 0.5, Math.random(), 2.4);
+      }
+    };
+    target.addEventListener("pointermove", onMove, { passive: true });
+    target.addEventListener("pointerdown", onDown, { passive: true });
+    target.addEventListener("pointerleave", onLeave);
+
+    /* ---------- step & render ---------- */
+    let t = 0;
+    const step = () => {
+      t += 1 / 60;
+      const dt = 1;
+
+      // Slow ambient wisps rising from the bottom so the hero is never empty.
+      for (let e = 0; e < 3; e++) {
+        const ex = NX * (0.18 + e * 0.32) + Math.sin(t * 0.4 + e * 2.1) * NX * 0.08;
+        splat(ex, NY - 2, Math.sin(t * 0.9 + e) * 0.3, -0.5, 0.035, e === 1 ? 0.9 : 0.1, 2.2);
+      }
+
+      if (pointer.moved && pointer.x >= 0) {
+        const dx = pointer.x - pointer.px;
+        const dy = pointer.y - pointer.py;
+        const dist = Math.hypot(dx, dy);
+        const steps = Math.max(1, Math.ceil(dist / 1.5));
+        const warm = 0.5 + 0.5 * Math.sin(t * 0.7);
+        for (let s = 1; s <= steps; s++) {
+          const f = s / steps;
+          splat(pointer.px + dx * f, pointer.py + dy * f, (dx / steps) * 1.6, (dy / steps) * 1.6, 0.22 / steps + 0.06, warm, 2.2);
+        }
+        pointer.px = pointer.x;
+        pointer.py = pointer.y;
+        pointer.moved = false;
+      }
+
+      // Buoyancy: denser smoke rises.
+      for (let id = 0; id < d.length; id++) v[id] -= 0.012 * d[id];
+
+      confine(0.35);
+      project();
+      u0.set(u);
+      v0.set(v);
+      const tu = u0;
+      const tv = v0;
+      // Advect velocity through itself using copies of the current field.
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          let x = i - dt * tu[id];
+          let y = j - dt * tv[id];
+          x = Math.max(0.5, Math.min(NX + 0.5, x));
+          y = Math.max(0.5, Math.min(NY + 0.5, y));
+          const i0 = x | 0;
+          const j0 = y | 0;
+          const s1 = x - i0;
+          const t1 = y - j0;
+          const a = IX(i0, j0);
+          u[id] = (1 - s1) * ((1 - t1) * tu[a] + t1 * tu[a + S]) + s1 * ((1 - t1) * tu[a + 1] + t1 * tu[a + S + 1]);
+          v[id] = (1 - s1) * ((1 - t1) * tv[a] + t1 * tv[a + S]) + s1 * ((1 - t1) * tv[a + 1] + t1 * tv[a + S + 1]);
+        }
+      }
+      bound(1, u);
+      bound(2, v);
+      project();
+
+      d0.set(d);
+      k0.set(k);
+      advect(0, d, d0, dt);
+      advect(0, k, k0, dt);
+
+      for (let id = 0; id < d.length; id++) {
+        d[id] *= 0.986;
+        u[id] *= 0.995;
+        v[id] *= 0.995;
+      }
+    };
+
+    const render = () => {
+      if (!img) return;
+      const px = img.data;
+      let o = 0;
+      for (let j = 1; j <= NY; j++) {
+        for (let i = 1; i <= NX; i++) {
+          const id = IX(i, j);
+          const a = Math.min(1, d[id]);
+          const w = k[id];
+          // cool sage-white mixed toward ochre
+          px[o] = 196 + (212 - 196) * w;
+          px[o + 1] = 214 + (163 - 214) * w;
+          px[o + 2] = 206 + (115 - 206) * w;
+          px[o + 3] = a * 170;
+          o += 4;
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+    };
+
+    let visible = true;
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting));
+    io.observe(target);
+
+    let raf = 0;
+    const loop = () => {
+      if (visible) {
+        step();
+        render();
+      }
+      raf = requestAnimationFrame(loop);
     };
 
     resize();
-    draw();
-    window.addEventListener("resize", resize);
+    let ro: ResizeObserver | null = null;
+    let lastW = target.clientWidth;
+    ro = new ResizeObserver(() => {
+      // Ignore height-only jitter (mobile URL bar) to avoid wiping the smoke.
+      if (Math.abs(target.clientWidth - lastW) < 2) return;
+      lastW = target.clientWidth;
+      resize();
+    });
+    ro.observe(target);
+
+    if (reduce) {
+      // A single still frame of soft haze instead of animation.
+      for (let n = 0; n < 160; n++) step();
+      render();
+    } else {
+      raf = requestAnimationFrame(loop);
+    }
+
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
+      io.disconnect();
+      ro?.disconnect();
+      target.removeEventListener("pointermove", onMove);
+      target.removeEventListener("pointerdown", onDown);
+      target.removeEventListener("pointerleave", onLeave);
     };
-  }, []);
+  }, [targetRef]);
 
-  return <canvas ref={ref} className="absolute inset-0 h-full w-full" aria-hidden="true" />;
+  return (
+    <canvas
+      ref={ref}
+      className="pointer-events-none absolute inset-0 h-full w-full"
+      style={{ filter: "blur(6px)", imageRendering: "auto" }}
+      aria-hidden="true"
+    />
+  );
 }
 
 function HeroEmblem({ className = "" }: { className?: string }) {
@@ -582,8 +872,10 @@ function HeroEmblem({ className = "" }: { className?: string }) {
 }
 
 function Hero({ status }: { status: { open: boolean; label: string } | null }) {
+  const heroRef = useRef<HTMLElement>(null);
+
   return (
-    <section id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0F291E]">
+    <section ref={heroRef} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0F291E]">
       <div
         className="absolute inset-0"
         style={{
@@ -591,7 +883,7 @@ function Hero({ status }: { status: { open: boolean; label: string } | null }) {
             "radial-gradient(ellipse at 20% 0%, rgba(82,121,111,0.38), transparent 60%), radial-gradient(ellipse at 90% 100%, rgba(212,163,115,0.14), transparent 55%)",
         }}
       />
-      <SmokeCanvas />
+      <FluidSmoke targetRef={heroRef} />
       <LeafSilhouette className="pointer-events-none absolute -right-10 top-24 h-80 w-40 rotate-[24deg] text-[#52796F]/50 sm:h-[26rem] sm:w-52 lg:hidden" />
       <LeafSilhouette className="pointer-events-none absolute -left-12 bottom-10 h-64 w-32 -rotate-[32deg] text-[#52796F]/30" />
 
@@ -652,6 +944,9 @@ function Hero({ status }: { status: { open: boolean; label: string } | null }) {
               <span>Open daily, 8:00 AM to 10:00 PM</span>
             )}
           </div>
+          <p className="mt-4 hidden text-xs text-[#F8F9FA]/40 motion-reduce:hidden md:block">
+            Move your cursor to stir the smoke. Click for a puff.
+          </p>
         </motion.div>
 
         <HeroEmblem className="mx-auto hidden w-full max-w-[24rem] lg:block" />
@@ -667,106 +962,175 @@ function Hero({ status }: { status: { open: boolean; label: string } | null }) {
 /* ------------------------------------------------------------------ */
 
 function MenuSection() {
-  const [active, setActive] = useState<Category | "All">("All");
-  const items = active === "All" ? MENU : MENU.filter((i) => i.category === active);
-  const filters: (Category | "All")[] = ["All", ...CATEGORIES];
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(MENU[0].id);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const { canvasRef, puff } = useSmokeBurst();
+  const group = MENU.find((g) => g.id === active) ?? MENU[0];
+
+  const puffFrom = (el: HTMLElement | null, count?: number, spread?: number) => {
+    const panel = panelRef.current;
+    if (!panel || !el) return;
+    const p = panel.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    puff(r.left + r.width / 2 - p.left, r.top + r.height / 2 - p.top, count, spread ?? p.width * 0.8);
+  };
+
+  const toggle = (e: { currentTarget: HTMLElement }) => {
+    puffFrom(e.currentTarget, open ? 40 : 60);
+    if (!open) {
+      // Follow the panel down as it expands so the smoke clears over the whole menu.
+      for (let i = 1; i <= 4; i++) {
+        setTimeout(() => {
+          const panel = panelRef.current;
+          if (!panel) return;
+          const h = panel.clientHeight;
+          puff(panel.clientWidth / 2, h * 0.6, 26, panel.clientWidth * 0.9, h * 0.7);
+        }, i * 140);
+      }
+    }
+    setOpen((o) => !o);
+  };
 
   return (
     <section id="menu" className="scroll-mt-20 bg-[#1A1E1C] py-24">
       <div className="mx-auto max-w-6xl px-5">
         <SectionHeading
           icon={<Leaf className="h-5 w-5" />}
-          title="Curated menu"
-          intro="A sample of what's on the shelf this week. Stock changes often, so tap order and we'll confirm availability on WhatsApp."
+          title="What's on the shelf"
+          intro="An overview of what we carry. Exact strains, stock and prices change often, so come in and see the shelf for yourself."
         />
 
-        <div className="-mx-5 mt-10 overflow-x-auto px-5 pb-2">
-          <div className="flex w-max gap-2" role="tablist" aria-label="Menu categories">
-            {filters.map((f) => {
-              const on = f === active;
-              return (
-                <button
-                  key={f}
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => setActive(f)}
-                  className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
-                    on
-                      ? "border-[#D4A373] bg-[#D4A373] text-[#0F291E]"
-                      : "border-[#52796F]/40 text-[#F8F9FA]/70 hover:border-[#52796F] hover:text-[#F8F9FA]"
-                  }`}
+        <div ref={panelRef} className={`${glass} relative mt-10 overflow-hidden rounded-3xl`}>
+          <button
+            onClick={toggle}
+            aria-expanded={open}
+            aria-controls="menu-panel"
+            className="group flex w-full items-center justify-between gap-6 px-6 py-6 text-left sm:px-8"
+          >
+            <span>
+              <span className="block font-display text-2xl text-[#F8F9FA]">
+                {open ? "The menu" : "Open the menu"}
+              </span>
+              <span className="mt-1 block text-sm text-[#F8F9FA]/55">
+                {MENU.map((g) => g.title).join(" · ")}
+              </span>
+            </span>
+            <span
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#D4A373]/50 text-[#D4A373] transition-all duration-500 group-hover:bg-[#D4A373] group-hover:text-[#0F291E] ${
+                open ? "rotate-180" : ""
+              }`}
+            >
+              <ChevronDown className="h-5 w-5" />
+            </span>
+          </button>
+
+          <AnimatePresence initial={false}>
+            {open && (
+              <motion.div
+                id="menu-panel"
+                key="panel"
+                initial={{ height: 0 }}
+                animate={{ height: "auto" }}
+                exit={{ height: 0 }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <motion.div
+                  initial={{ opacity: 0, filter: "blur(14px)", y: 12 }}
+                  animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                  exit={{ opacity: 0, filter: "blur(14px)" }}
+                  transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-t border-[#52796F]/25 px-6 pb-8 pt-6 sm:px-8"
                 >
-                  {f === "All" ? "Everything" : f}
-                </button>
-              );
-            })}
-          </div>
+                  <div className="-mx-6 overflow-x-auto px-6 pb-2 sm:-mx-8 sm:px-8">
+                    <div className="flex w-max gap-2" role="tablist" aria-label="Menu categories">
+                      {MENU.map((g) => {
+                        const on = g.id === active;
+                        return (
+                          <button
+                            key={g.id}
+                            role="tab"
+                            aria-selected={on}
+                            onClick={(e) => {
+                              if (!on) puffFrom(e.currentTarget, 18, 120);
+                              setActive(g.id);
+                            }}
+                            className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
+                              on
+                                ? "border-[#D4A373] bg-[#D4A373] text-[#0F291E]"
+                                : "border-[#52796F]/40 text-[#F8F9FA]/70 hover:border-[#52796F] hover:text-[#F8F9FA]"
+                            }`}
+                          >
+                            {g.icon}
+                            {g.title}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={group.id}
+                      role="tabpanel"
+                      initial={{ opacity: 0, filter: "blur(8px)" }}
+                      animate={{ opacity: 1, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, filter: "blur(8px)" }}
+                      transition={{ duration: 0.35 }}
+                      className="mt-6"
+                    >
+                      <p className="max-w-2xl text-sm leading-relaxed text-[#F8F9FA]/60">{group.blurb}</p>
+                      <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                        {group.types.map((t, i) => (
+                          <motion.li
+                            key={t.name}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.35, delay: 0.05 * i }}
+                            className="flex gap-4 rounded-2xl bg-[#0F291E]/55 p-4"
+                          >
+                            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#52796F]/40 text-[#D4A373]">
+                              <Sparkles className="h-3.5 w-3.5" />
+                            </span>
+                            <span>
+                              <span className="block font-display text-lg text-[#F8F9FA]">{t.name}</span>
+                              <span className="mt-0.5 block text-sm leading-relaxed text-[#F8F9FA]/60">
+                                {t.note}
+                              </span>
+                            </span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  </AnimatePresence>
+
+                  <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#52796F]/30 px-5 py-4">
+                    <p className="flex items-center gap-3 text-sm text-[#F8F9FA]/70">
+                      <Store className="h-4 w-4 shrink-0 text-[#D4A373]" />
+                      Strains, stock and prices are available in store only.
+                    </p>
+                    <a
+                      href="#visit"
+                      className="inline-flex items-center gap-2 rounded-full bg-[#52796F] px-4 py-2.5 text-sm font-medium text-[#F8F9FA] transition-colors hover:bg-[#5f8b80]"
+                    >
+                      Visit the shop
+                      <ChevronRight className="h-4 w-4" />
+                    </a>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <canvas
+            ref={canvasRef}
+            className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+            aria-hidden="true"
+          />
         </div>
 
-        <motion.div layout className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="popLayout">
-            {items.map((item) => (
-              <motion.article
-                layout
-                key={item.name}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.25 }}
-                className={`${glass} flex flex-col rounded-2xl p-6`}
-              >
-                <p className="text-xs text-[#52796F]">{item.category}</p>
-                <h3 className="mt-1 font-display text-xl text-[#F8F9FA]">{item.name}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#F8F9FA]/60">{item.note}</p>
-
-                <dl className="mt-5 grid grid-cols-2 gap-2 text-sm">
-                  <div className="rounded-xl bg-[#0F291E]/60 px-3 py-2">
-                    <dt className="text-xs text-[#F8F9FA]/50">THC</dt>
-                    <dd className="font-semibold text-[#F8F9FA]">{item.thc}</dd>
-                  </div>
-                  <div className="rounded-xl bg-[#0F291E]/60 px-3 py-2">
-                    <dt className="text-xs text-[#F8F9FA]/50">CBD</dt>
-                    <dd className="font-semibold text-[#F8F9FA]">{item.cbd}</dd>
-                  </div>
-                </dl>
-
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {item.terpenes.map((t) => (
-                    <span
-                      key={t}
-                      className="inline-flex items-center gap-1 rounded-full border border-[#52796F]/35 px-2.5 py-1 text-xs text-[#F8F9FA]/70"
-                    >
-                      <Sparkles className="h-3 w-3 text-[#D4A373]" />
-                      {t}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="mt-auto flex items-end justify-between gap-3 pt-6">
-                  <div>
-                    <p className="font-display text-2xl text-[#D4A373]">R{item.price}</p>
-                    <p className="text-xs text-[#F8F9FA]/50">{item.unit}</p>
-                  </div>
-                  <a
-                    href={waLink(
-                      `Hi Coastal Herbalist, I'd like to order: ${item.name} (${item.unit}) at R${item.price}. Is it available?`
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#52796F] px-4 py-2.5 text-sm font-medium text-[#F8F9FA] transition-colors hover:bg-[#5f8b80]"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Order
-                  </a>
-                </div>
-              </motion.article>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
-        <p className="mt-8 text-sm text-[#F8F9FA]/45">
-          Adults 18+ only. Prices in ZAR and subject to change.
-        </p>
+        <p className="mt-8 text-sm text-[#F8F9FA]/45">Adults 18+ only. Please use responsibly.</p>
       </div>
     </section>
   );
