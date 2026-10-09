@@ -33,9 +33,11 @@ import {
 const PHONE_DISPLAY = "+27 82 605 2137";
 const PHONE_TEL = "tel:+27826052137";
 const WHATSAPP_NUMBER = "27826052137";
-const ADDRESS = "113 Marine Dr, Lawrence Rocks, Margate, 4285";
-const MAPS_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
-const MAPS_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
+const ADDRESS = "99 Marine Dr, Oslo Beach, Margate, 4275";
+// Google plus code pins the exact shopfront (Oasis Lodge building).
+const MAPS_PLUS_CODE = "49M9+JP Margate";
+const MAPS_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(MAPS_PLUS_CODE)}`;
+const MAPS_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(MAPS_PLUS_CODE)}&output=embed`;
 const OPEN_HOUR = 8;
 const CLOSE_HOUR = 22;
 
@@ -1259,7 +1261,7 @@ function StoreInfo({ status }: { status: { open: boolean; label: string } | null
         <SectionHeading
           icon={<MapPin className="h-5 w-5" />}
           title="Visit the shop"
-          intro="On Marine Drive at Lawrence Rocks, open every day of the week."
+          intro="On Marine Drive at Oslo Beach, open every day of the week."
         />
 
         <div className={`${glass} mt-10 grid overflow-hidden rounded-3xl lg:grid-cols-2`}>
@@ -1269,9 +1271,9 @@ function StoreInfo({ status }: { status: { open: boolean; label: string } | null
               <div>
                 <p className="text-sm text-[#F8F9FA]/50">Address</p>
                 <p className="mt-1 text-[#F8F9FA]">
-                  113 Marine Dr, Lawrence Rocks
+                  99 Marine Dr, Oslo Beach
                   <br />
-                  Margate, 4285
+                  Margate, 4275
                 </p>
               </div>
             </div>

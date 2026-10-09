@@ -4,14 +4,14 @@ import type { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Coastal Herbalist | Coastal Dispensary & Botanical Remedies Margate",
   description:
-    "Coastal Herbalist in Lawrence Rocks, Margate: premium botanical goods, herbal remedies, artisanal teas, topicals and curated cannabis products. Open daily 8:00 AM to 10:00 PM.",
+    "Coastal Herbalist in Oslo Beach, Margate: premium botanical goods, herbal remedies, artisanal teas, topicals and curated cannabis products. Open daily 8:00 AM to 10:00 PM.",
   keywords: [
     "Coastal Herbalist",
     "Margate dispensary",
     "herbal remedies KZN",
     "CBD oil Margate",
     "botanical wellness South Coast",
-    "Lawrence Rocks",
+    "Oslo Beach",
   ],
   openGraph: {
     title: "Coastal Herbalist | Coastal Dispensary & Botanical Remedies Margate",
@@ -59,10 +59,10 @@ const jsonLd = {
   telephone: "+27826052137",
   address: {
     "@type": "PostalAddress",
-    streetAddress: "113 Marine Dr, Lawrence Rocks",
+    streetAddress: "99 Marine Dr, Oslo Beach",
     addressLocality: "Margate",
     addressRegion: "KwaZulu-Natal",
-    postalCode: "4285",
+    postalCode: "4275",
     addressCountry: "ZA",
   },
   openingHours: "Mo-Su 08:00-22:00",
