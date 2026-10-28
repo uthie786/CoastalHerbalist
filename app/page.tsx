@@ -938,13 +938,6 @@ function FluidSmoke({ targetRef }: { targetRef: RefObject<HTMLElement> }) {
 function HeroEmblem({ className = "" }: { className?: string }) {
   return (
     <div className={`relative ${className}`} aria-hidden="true">
-      <div
-        className="absolute -inset-[30%] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(244,196,48,0.16) 0%, rgba(31,157,72,0.08) 40%, rgba(10,11,10,0) 70%)",
-        }}
-      />
       <motion.div
         className="relative"
         initial={{ opacity: 0, scale: 0.92, y: 10 }}
