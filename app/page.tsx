@@ -981,8 +981,9 @@ function Hero() {
             "radial-gradient(ellipse at 15% 0%, rgba(31,157,72,0.22), transparent 55%), radial-gradient(ellipse at 85% 10%, rgba(244,196,48,0.12), transparent 50%), radial-gradient(ellipse at 50% 120%, rgba(226,35,26,0.14), transparent 55%)",
         }}
       />
-      <Skyline className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full text-[#141614] sm:h-56" />
       <FluidSmoke targetRef={heroRef} />
+      {/* After the smoke so the buildings sit in front of it. */}
+      <Skyline className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full text-[#141614] sm:h-56" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-28 pt-32 lg:grid-cols-[1.35fr_1fr]">
         <motion.div
