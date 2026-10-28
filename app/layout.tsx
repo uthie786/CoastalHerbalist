@@ -1,32 +1,34 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+const description =
+  "Rooftop 420: members' lounges, bud shops and rooftop spaces across Greater Durban and Greater Cape Town. Find your nearest store in Berea, Overport, Windermere, Pinetown, Isipingo Beach, Sea Point, Plumstead, Newlands, Claremont, Hout Bay and Wynberg.";
+
 export const metadata: Metadata = {
-  title: "Coastal Herbalist | Coastal Dispensary & Botanical Remedies Margate",
-  description:
-    "Coastal Herbalist in Lawrence Rocks, Margate: premium botanical goods, herbal remedies, artisanal teas, topicals and curated cannabis products. Open daily 8:00 AM to 10:00 PM.",
+  title: "Rooftop 420 | Cannabis Lounges & Bud Shops in Durban and Cape Town",
+  description,
   keywords: [
-    "Coastal Herbalist",
-    "Margate dispensary",
-    "herbal remedies KZN",
-    "CBD oil Margate",
-    "botanical wellness South Coast",
-    "Lawrence Rocks",
+    "Rooftop 420",
+    "Studio 420",
+    "Durban cannabis lounge",
+    "Cape Town cannabis lounge",
+    "bud shop Durban",
+    "bud shop Cape Town",
+    "cannabis club South Africa",
   ],
   openGraph: {
-    title: "Coastal Herbalist | Coastal Dispensary & Botanical Remedies Margate",
-    description:
-      "Botanical goods, herbal remedies, teas, topicals and curated cannabis products on Marine Drive, Margate.",
+    title: "Rooftop 420 | Cannabis Lounges & Bud Shops",
+    description,
     type: "website",
     locale: "en_ZA",
-    siteName: "Coastal Herbalist",
+    siteName: "Rooftop 420",
   },
-  icons: { icon: "/logo.png", apple: "/logo.png" },
+  icons: { icon: "/icon.png", apple: "/icon.png" },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0F291E",
+  themeColor: "#0A0B0A",
   width: "device-width",
   initialScale: 1,
 };
@@ -36,7 +38,7 @@ tailwind.config = {
   theme: {
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'Georgia', 'serif'],
+        display: ['Outfit', 'system-ui', 'sans-serif'],
         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
     },
@@ -45,27 +47,43 @@ tailwind.config = {
 `;
 
 const globalStyles = `
-html { scroll-behavior: smooth; background: #1A1E1C; }
+html { scroll-behavior: smooth; background: #121412; }
 body { -webkit-font-smoothing: antialiased; }
-::selection { background: #D4A373; color: #0F291E; }
-:focus-visible { outline: 2px solid #D4A373; outline-offset: 3px; border-radius: 6px; }
+::selection { background: #F4C430; color: #0A0B0A; }
+:focus-visible { outline: 2px solid #F4C430; outline-offset: 3px; border-radius: 6px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 `;
 
+const stores: [string, string, string][] = [
+  ["Berea", "147 Problem Mkhize Road, Essenwood, Berea", "Durban"],
+  ["Overport", "Shop 7, Sunway Centre, 65 Overport Drive, Overport", "Durban"],
+  ["Windermere", "196 Gordon Road, Windermere", "Durban"],
+  ["Pinetown", "48 Bartlett Road, Farningham Ridge", "Pinetown"],
+  ["Isipingo Beach", "3 Beach Road, Isipingo Beach", "Durban"],
+  ["Sea Point", "233 Main Road, Sea Point", "Cape Town"],
+  ["Plumstead", "126 Main Road, Plumstead", "Cape Town"],
+  ["Newlands", "18 Wilkinson Street, Newlands", "Cape Town"],
+  ["Claremont", "18 Imam Haron Road, Claremont", "Cape Town"],
+  ["Hout Bay", "Victoria Mall, 17A Victoria Road, Hout Bay", "Cape Town"],
+  ["Wynberg", "Wynberg Centre, 123 Main Road, Wynberg", "Cape Town"],
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Store",
-  name: "Coastal Herbalist",
-  telephone: "+27826052137",
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "113 Marine Dr, Lawrence Rocks",
-    addressLocality: "Margate",
-    addressRegion: "KwaZulu-Natal",
-    postalCode: "4285",
-    addressCountry: "ZA",
-  },
-  openingHours: "Mo-Su 08:00-22:00",
+  "@type": "Organization",
+  name: "Rooftop 420",
+  logo: "/rooftop420-logo.png",
+  location: stores.map(([name, streetAddress, addressLocality]) => ({
+    "@type": "Store",
+    name: `Rooftop 420 ${name}`,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress,
+      addressLocality,
+      addressRegion: addressLocality === "Cape Town" ? "Western Cape" : "KwaZulu-Natal",
+      addressCountry: "ZA",
+    },
+  })),
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -77,13 +95,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
           rel="stylesheet"
         />
         <style dangerouslySetInnerHTML={{ __html: globalStyles }} />
       </head>
       <body
-        className="bg-[#1A1E1C] font-sans text-[#F8F9FA]"
+        className="bg-[#121412] font-sans text-[#F7F5EF]"
         style={{ fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif' }}
       >
         <script

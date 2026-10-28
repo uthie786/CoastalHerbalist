@@ -5,14 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Leaf,
   MapPin,
-  Phone,
-  Clock,
   Sparkles,
   BookOpen,
   Gamepad2,
   ChevronRight,
   ChevronDown,
-  MessageCircle,
   Navigation,
   Volume2,
   VolumeX,
@@ -24,34 +21,168 @@ import {
   Gift,
   Cigarette,
   Store,
+  Building2,
+  Moon,
+  Users,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
-/* Business constants                                                  */
+/* Brand constants                                                     */
 /* ------------------------------------------------------------------ */
 
-const PHONE_DISPLAY = "+27 82 605 2137";
-const PHONE_TEL = "tel:+27826052137";
-const WHATSAPP_NUMBER = "27826052137";
-const ADDRESS = "113 Marine Dr, Lawrence Rocks, Margate, 4285";
-const MAPS_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
-const MAPS_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
-const OPEN_HOUR = 8;
-const CLOSE_HOUR = 22;
+const BRAND = "Rooftop 420";
+const LOGO_SRC = "/rooftop420-logo.png";
 
 const COLORS = {
-  deep: "#0F291E",
-  sage: "#52796F",
-  char: "#1A1E1C",
-  ochre: "#D4A373",
-  cream: "#F8F9FA",
+  ink: "#0A0B0A",
+  char: "#121412",
+  gold: "#F4C430",
+  red: "#E2231A",
+  green: "#1F9D48",
+  cream: "#F7F5EF",
 };
 
-const waLink = (text: string) =>
-  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-
 const glass =
-  "bg-white/[0.035] backdrop-blur-xl border border-[#52796F]/30 shadow-[inset_0_1px_0_rgba(248,249,250,0.06)]";
+  "bg-white/[0.035] backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]";
+
+const directionsUrl = (address: string) =>
+  `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`;
+const embedUrl = (address: string) =>
+  `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+
+/* ------------------------------------------------------------------ */
+/* Locations                                                           */
+/* ------------------------------------------------------------------ */
+
+interface Location {
+  id: string;
+  name: string;
+  /** Trading name, when the branch runs under a different flag. */
+  alias?: string;
+  street: string;
+  area: string;
+  note: string;
+  tags: string[];
+}
+
+interface Region {
+  id: string;
+  title: string;
+  metro: string;
+  locations: Location[];
+}
+
+const REGIONS: Region[] = [
+  {
+    id: "kzn",
+    title: "KwaZulu-Natal",
+    metro: "Greater Durban",
+    locations: [
+      {
+        id: "berea",
+        name: "Berea",
+        street: "147 Problem Mkhize Road",
+        area: "Essenwood, Berea, Durban",
+        note: "One of our main members-only lounges, with a fully stocked bud shop.",
+        tags: ["Members' lounge", "Bud shop"],
+      },
+      {
+        id: "overport",
+        name: "Overport",
+        street: "Shop 7, Sunway Centre, 65 Overport Drive",
+        area: "Overport, Durban",
+        note: "A clean, bright retail dispensary in the Sunway Centre.",
+        tags: ["Dispensary"],
+      },
+      {
+        id: "windermere",
+        name: "Windermere",
+        alias: "Rooftop 420 Gordon",
+        street: "196 Gordon Road",
+        area: "Windermere, Durban",
+        note: "A stylish lounge space on Gordon Road.",
+        tags: ["Lounge"],
+      },
+      {
+        id: "pinetown",
+        name: "Pinetown",
+        street: "48 Bartlett Road, Farningham Ridge",
+        area: "Pinetown",
+        note: "A relaxed, laid-back spot with one of our widest product selections.",
+        tags: ["Bud shop", "Wide selection"],
+      },
+      {
+        id: "isipingo",
+        name: "Isipingo Beach",
+        alias: "420 Rooftop",
+        street: "3 Beach Road",
+        area: "Isipingo Beach",
+        note: "Open-air rooftop seating with views over the beach.",
+        tags: ["Rooftop", "Sea views"],
+      },
+    ],
+  },
+  {
+    id: "wc",
+    title: "Western Cape",
+    metro: "Greater Cape Town",
+    locations: [
+      {
+        id: "seapoint",
+        name: "Sea Point",
+        street: "233 Main Road",
+        area: "Sea Point, Cape Town",
+        note: "A busy Main Road branch that stays open late.",
+        tags: ["Late night"],
+      },
+      {
+        id: "plumstead",
+        name: "Plumstead",
+        alias: "Studio 420",
+        street: "126 Main Road",
+        area: "Plumstead, Cape Town",
+        note: "Our 24-hour flagship lounge, with pool tables and its own coffee bar.",
+        tags: ["Flagship", "24 hours", "Coffee bar"],
+      },
+      {
+        id: "newlands",
+        name: "Newlands",
+        alias: "Studio 420",
+        street: "18 Wilkinson Street",
+        area: "Newlands, Cape Town",
+        note: "Trading as Studio 420, in leafy Newlands.",
+        tags: ["Studio 420"],
+      },
+      {
+        id: "claremont",
+        name: "Claremont",
+        street: "18 Imam Haron Road",
+        area: "Claremont, Cape Town",
+        note: "A rooftop oasis known for curated edibles and flower.",
+        tags: ["Rooftop", "Edibles"],
+      },
+      {
+        id: "houtbay",
+        name: "Hout Bay",
+        street: "Victoria Mall, 17A Victoria Road",
+        area: "Hout Bay, Cape Town",
+        note: "A welcoming boutique store close to the harbour.",
+        tags: ["Boutique"],
+      },
+      {
+        id: "wynberg",
+        name: "Wynberg",
+        street: "Wynberg Centre, 123 Main Road",
+        area: "Wynberg, Cape Town",
+        note: "Easy to reach in the Wynberg Centre on Main Road.",
+        tags: ["Shop"],
+      },
+    ],
+  },
+];
+
+const LOCATION_COUNT = REGIONS.reduce((n, r) => n + r.locations.length, 0);
+const fullAddress = (l: Location) => `${l.street}, ${l.area}`;
 
 /* ------------------------------------------------------------------ */
 /* Menu data: product types only. Strains and prices are in store.     */
@@ -86,7 +217,7 @@ const MENU: MenuGroup[] = [
   {
     id: "prerolls",
     title: "Pre-rolls",
-    blurb: "Ready-rolled in unbleached paper, in the same four grow classes as our flower.",
+    blurb: "Ready-rolled and ready for the rooftop, in the same grow classes as our flower.",
     icon: <Cigarette className="h-4 w-4" />,
     types: [
       { name: "Tunnel pre-rolls", note: "Easy-going everyday joints." },
@@ -98,54 +229,90 @@ const MENU: MenuGroup[] = [
   {
     id: "dab",
     title: "Dab bar",
-    blurb: "Concentrates served at the counter by staff who'll walk you through it.",
+    blurb: "Concentrates served by staff who'll walk you through it.",
     icon: <Flame className="h-4 w-4" />,
     types: [
-      { name: "Dab hits", note: "Single hits served in store. First time? We'll start you small." },
+      { name: "Dab hits", note: "Single hits served in the lounge. First time? We'll start you small." },
       { name: "Concentrates", note: "Rosin, wax and shatter to take home, when available." },
     ],
   },
   {
-    id: "oils",
-    title: "Oils & tinctures",
-    blurb: "Measured drops for steady, smoke-free dosing.",
-    icon: <Droplets className="h-4 w-4" />,
-    types: [
-      { name: "CBD oils", note: "Broad-spectrum CBD in a range of strengths." },
-      { name: "THC:CBD tinctures", note: "Balanced and CBD-forward ratios for day or evening." },
-    ],
-  },
-  {
     id: "edibles",
-    title: "Edibles & infusions",
+    title: "Edibles",
     blurb: "Slow and long-lasting. Wait two hours before having more.",
     icon: <Cookie className="h-4 w-4" />,
     types: [
       { name: "Gummies", note: "Pre-dosed pieces, easy to portion." },
-      { name: "Chocolates", note: "Infused bars, portioned by the square." },
-      { name: "Teas & infusions", note: "Herbal blends with hemp-derived CBD." },
+      { name: "Chocolates & baked goods", note: "Infused treats, portioned for you." },
+      { name: "Infused drinks", note: "Sip slowly and give it time to land." },
     ],
   },
   {
-    id: "topicals",
-    title: "Topicals & salves",
-    blurb: "Applied to the skin. Non-intoxicating.",
+    id: "oils",
+    title: "Oils & topicals",
+    blurb: "Measured drops and smoke-free options.",
+    icon: <Droplets className="h-4 w-4" />,
+    types: [
+      { name: "CBD oils", note: "Broad-spectrum CBD in a range of strengths." },
+      { name: "THC:CBD tinctures", note: "Balanced and CBD-forward ratios for day or evening." },
+      { name: "Balms & rubs", note: "Applied to the skin. Non-intoxicating." },
+    ],
+  },
+  {
+    id: "lounge",
+    title: "Lounge",
+    blurb: "Stay a while. What's on offer varies from store to store.",
     icon: <HandHeart className="h-4 w-4" />,
     types: [
-      { name: "Balms & salves", note: "Rich balms for dry or overworked skin." },
-      { name: "Muscle rubs", note: "Cooling rubs for after the surf or the gym." },
+      { name: "Lounge seating", note: "Comfortable indoor and rooftop spaces to sit back with friends." },
+      { name: "Coffee bar", note: "Fresh coffee at our Plumstead flagship." },
+      { name: "Games", note: "Pool tables and more at our Plumstead flagship." },
     ],
   },
   {
     id: "accessories",
-    title: "Accessories & curios",
+    title: "Accessories",
     blurb: "Everything you need to roll, grind, smoke and gift.",
     icon: <Gift className="h-4 w-4" />,
     types: [
       { name: "Rolling papers & cones", note: "Unbleached, hemp and flavoured papers, tips and cones." },
       { name: "Herb grinders", note: "Pocket grinders to multi-chamber metal ones." },
       { name: "Pipes & glass", note: "Hand pipes, bongs and bubblers." },
-      { name: "Curios & gifts", note: "Ashtrays, stash jars, lighters and local keepsakes." },
+      { name: "Merch & gifts", note: "Ashtrays, stash jars, lighters and gifts." },
+    ],
+  },
+];
+
+
+/* ------------------------------------------------------------------ */
+/* Research data                                                       */
+/* ------------------------------------------------------------------ */
+
+const RESEARCH = [
+  {
+    title: "Terpene science: myrcene, limonene and caryophyllene",
+    body: [
+      "Terpenes are the aromatic compounds that give each cultivar its scent. They are found across the plant world, in mangoes, citrus peel and black pepper.",
+      "Myrcene is the most common terpene in cannabis. Animal studies link it to sedative and muscle-relaxing effects, which is why myrcene-heavy flower is often chosen for evenings.",
+      "Limonene, also found in citrus peel, has shown mood-lifting and anti-anxiety effects in early animal and small human studies.",
+      "Beta-caryophyllene is unusual: it binds directly to the body's CB2 receptors, which are involved in inflammation. Most evidence so far comes from lab and animal research.",
+    ],
+  },
+  {
+    title: "The endocannabinoid system: pain, sleep and stress",
+    body: [
+      "The endocannabinoid system (ECS) is a signalling network of receptors (CB1 and CB2) and the body's own cannabinoids, such as anandamide and 2-AG. It helps regulate pain, sleep, appetite, mood and immune response.",
+      "Chronic pain has the strongest evidence. A 2017 review by the US National Academies found substantial evidence that cannabis is effective for chronic pain in adults.",
+      "For insomnia and stress the evidence is more limited. Some studies report shorter time to fall asleep and lower anxiety, while regular high-THC use can disrupt sleep quality.",
+      "Responses vary between people. Anyone on prescription medication, pregnant or breastfeeding should speak to a doctor first, since CBD and THC can interact with some medicines.",
+    ],
+  },
+  {
+    title: "Homegrown: South Africa's cannabis heritage",
+    body: [
+      "South Africa has one of the world's oldest cannabis cultures. Durban Poison, a landrace sativa from KwaZulu-Natal, is among the best-known cultivars anywhere.",
+      "Long, bright summers suit the plant on both coasts. KZN's warm, humid climate means growers need strong airflow and careful drying to keep mould away.",
+      "The Western Cape's winter-rainfall climate gives drier summers, but terpenes are volatile and break down with heat, so a slow cure in cool, dark conditions matters wherever it's grown.",
     ],
   },
 ];
@@ -223,7 +390,7 @@ function useSmokeBurst() {
         a: 0.12 + Math.random() * 0.16,
         life: 0,
         max: 1.4 + Math.random() * 1.3,
-        col: tint > 0.8 ? "212,163,115" : tint > 0.4 ? "140,170,160" : "230,236,233",
+        col: tint > 0.8 ? "244,196,48" : tint > 0.4 ? "190,196,188" : "236,236,230",
       });
     }
     if (!s.raf) s.raf = requestAnimationFrame(loop);
@@ -233,137 +400,65 @@ function useSmokeBurst() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Research data                                                       */
+/* Small components                                                    */
 /* ------------------------------------------------------------------ */
 
-const RESEARCH = [
-  {
-    title: "Terpene science: myrcene, limonene and caryophyllene",
-    body: [
-      "Terpenes are the aromatic compounds that give each cultivar its scent. They are found across the plant world, in mangoes, citrus peel and black pepper.",
-      "Myrcene is the most common terpene in cannabis. Animal studies link it to sedative and muscle-relaxing effects, which is why myrcene-heavy flower is often chosen for evenings.",
-      "Limonene, also found in citrus peel, has shown mood-lifting and anti-anxiety effects in early animal and small human studies.",
-      "Beta-caryophyllene is unusual: it binds directly to the body's CB2 receptors, which are involved in inflammation. Most evidence so far comes from lab and animal research.",
-    ],
-  },
-  {
-    title: "The endocannabinoid system: pain, sleep and stress",
-    body: [
-      "The endocannabinoid system (ECS) is a signalling network of receptors (CB1 and CB2) and the body's own cannabinoids, such as anandamide and 2-AG. It helps regulate pain, sleep, appetite, mood and immune response.",
-      "Chronic pain has the strongest evidence. A 2017 review by the US National Academies found substantial evidence that cannabis is effective for chronic pain in adults.",
-      "For insomnia and stress the evidence is more limited. Some studies report shorter time to fall asleep and lower anxiety, while regular high-THC use can disrupt sleep quality.",
-      "Responses vary between people. Anyone on prescription medication, pregnant or breastfeeding should speak to a doctor first, since CBD and THC can interact with some medicines.",
-    ],
-  },
-  {
-    title: "Local cultivation: why the KZN coast suits terpenes",
-    body: [
-      "Terpenes are volatile and break down with heat. The South Coast's mild, frost-free climate and cooling sea breezes avoid the heat spikes that strip aroma from a crop.",
-      "Long, bright summer days support vigorous growth, and KZN has a long cannabis heritage: Durban Poison is one of the world's best-known landrace cultivars.",
-      "The trade-off is humidity. Coastal growers need strong airflow and careful drying to prevent mould, and slow curing in cool, dark conditions keeps the terpene profile intact.",
-    ],
-  },
-];
-
-/* ------------------------------------------------------------------ */
-/* Hooks & small components                                            */
-/* ------------------------------------------------------------------ */
-
-function useOpenStatus() {
-  const [status, setStatus] = useState<{ open: boolean; label: string } | null>(null);
-
-  useEffect(() => {
-    const check = () => {
-      const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Africa/Johannesburg",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }).formatToParts(new Date());
-      const h = Number(parts.find((p) => p.type === "hour")?.value ?? 0) % 24;
-      const m = Number(parts.find((p) => p.type === "minute")?.value ?? 0);
-      const open = h >= OPEN_HOUR && h < CLOSE_HOUR;
-      let label: string;
-      if (open) {
-        const minsLeft = (CLOSE_HOUR - h) * 60 - m;
-        label = minsLeft <= 60 ? `Open now, closes in ${minsLeft} min` : "Open now until 10:00 PM";
-      } else {
-        label = "Closed, opens at 8:00 AM";
-      }
-      setStatus({ open, label });
-    };
-    check();
-    const id = setInterval(check, 60_000);
-    return () => clearInterval(id);
-  }, []);
-
-  return status;
-}
-
-function StatusDot({ open }: { open: boolean }) {
-  return (
-    <span className="relative flex h-2.5 w-2.5">
-      {open && (
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#8fd1a8] opacity-60 motion-reduce:animate-none" />
-      )}
-      <span
-        className={`relative inline-flex h-2.5 w-2.5 rounded-full ${open ? "bg-[#8fd1a8]" : "bg-[#D4A373]"}`}
-      />
-    </span>
-  );
-}
-
-function Logo({ size = 40 }: { size?: number }) {
-  const [ok, setOk] = useState(true);
-  const ref = useRef<HTMLImageElement>(null);
-
-  useEffect(() => {
-    const img = ref.current;
-    if (img && img.complete && img.naturalWidth === 0) setOk(false);
-  }, []);
-
-  if (!ok) {
-    return (
-      <span
-        className="grid place-items-center rounded-full bg-[#0F291E] ring-1 ring-[#52796F]/60"
-        style={{ width: size, height: size }}
-      >
-        <Leaf className="h-1/2 w-1/2 text-[#D4A373]" />
-      </span>
-    );
-  }
-
+function Logo({ height = 36, className = "" }: { height?: number; className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      ref={ref}
-      src="/logo.png"
-      alt="Coastal Herbalist logo"
-      width={size}
-      height={size}
-      onError={() => setOk(false)}
-      className="rounded-full object-cover ring-1 ring-[#52796F]/50 shadow-[0_0_0_3px_rgba(15,41,30,0.85),0_6px_24px_-6px_rgba(82,121,111,0.6)]"
-      style={{ width: size, height: size }}
+      src={LOGO_SRC}
+      alt={BRAND}
+      height={height}
+      className={`w-auto select-none ${className}`}
+      style={{ height }}
+      draggable={false}
     />
   );
 }
 
-function LeafSilhouette({ className = "" }: { className?: string }) {
+/** The red, gold and green stripe from the "420" in the logo. */
+function TriStripe({ className = "" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 120 240" className={className} fill="none" aria-hidden="true">
-      <path
-        d="M60 4 C 110 62, 112 150, 60 236 C 8 150, 10 62, 60 4 Z"
-        fill="currentColor"
-        fillOpacity="0.28"
-        stroke="currentColor"
-        strokeOpacity="0.5"
-      />
-      <path d="M60 16 V 232" stroke="currentColor" strokeOpacity="0.6" strokeWidth="1.2" />
-      {[48, 78, 108, 138, 168].map((y) => (
-        <g key={y} stroke="currentColor" strokeOpacity="0.45" strokeWidth="1">
-          <path d={`M60 ${y + 22} Q 80 ${y + 6} 94 ${y - 8}`} />
-          <path d={`M60 ${y + 22} Q 40 ${y + 6} 26 ${y - 8}`} />
-        </g>
+    <span className={`flex h-[3px] w-12 overflow-hidden rounded-full ${className}`} aria-hidden="true">
+      <span className="flex-1 bg-[#E2231A]" />
+      <span className="flex-1 bg-[#F4C430]" />
+      <span className="flex-1 bg-[#1F9D48]" />
+    </span>
+  );
+}
+
+/** A deterministic city skyline silhouette, drawn as one SVG path. */
+function Skyline({ className = "", windows = true }: { className?: string; windows?: boolean }) {
+  const W = 1440;
+  const H = 220;
+  const rand = (n: number) => {
+    const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  const blocks: { x: number; w: number; h: number }[] = [];
+  for (let x = 0, i = 0; x < W; i++) {
+    const w = 38 + Math.round(rand(i) * 70);
+    const h = 50 + Math.round(rand(i + 50) * 140);
+    blocks.push({ x, w, h });
+    x += w + Math.round(rand(i + 99) * 6);
+  }
+  const path = blocks.map((b) => `M${b.x} ${H}V${H - b.h}h${b.w}V${H}Z`).join("");
+  const lights: { x: number; y: number }[] = [];
+  if (windows) {
+    blocks.forEach((b, bi) => {
+      for (let wy = H - b.h + 14; wy < H - 10; wy += 16) {
+        for (let wx = b.x + 8; wx < b.x + b.w - 10; wx += 13) {
+          if (rand(bi * 31 + wx * 0.7 + wy * 1.3) > 0.86) lights.push({ x: wx, y: wy });
+        }
+      }
+    });
+  }
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMax slice" className={className} aria-hidden="true">
+      <path d={path} fill="currentColor" />
+      {lights.map((l, i) => (
+        <rect key={i} x={l.x} y={l.y} width="4" height="6" rx="1" fill="#F4C430" fillOpacity={0.25 + (i % 4) * 0.12} />
       ))}
     </svg>
   );
@@ -380,11 +475,14 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-2xl">
-      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#52796F]/40 text-[#D4A373]">
+      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-[#F4C430]">
         {icon}
       </div>
-      <h2 className="font-display text-3xl leading-tight text-[#F8F9FA] sm:text-4xl">{title}</h2>
-      <p className="mt-3 text-base leading-relaxed text-[#F8F9FA]/65">{intro}</p>
+      <h2 className="font-display text-3xl font-semibold leading-tight tracking-tight text-[#F7F5EF] sm:text-4xl">
+        {title}
+      </h2>
+      <TriStripe className="mt-4" />
+      <p className="mt-4 text-base leading-relaxed text-[#F7F5EF]/65">{intro}</p>
     </div>
   );
 }
@@ -398,7 +496,7 @@ function AgeGate() {
 
   useEffect(() => {
     try {
-      if (sessionStorage.getItem("ch-age-ok") !== "1") setShow(true);
+      if (sessionStorage.getItem("r420-age-ok") !== "1") setShow(true);
     } catch {
       setShow(true);
     }
@@ -406,7 +504,7 @@ function AgeGate() {
 
   const confirm = () => {
     try {
-      sessionStorage.setItem("ch-age-ok", "1");
+      sessionStorage.setItem("r420-age-ok", "1");
     } catch {
       /* storage unavailable: gate simply shows again next visit */
     }
@@ -417,7 +515,7 @@ function AgeGate() {
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-0 z-[60] grid place-items-center bg-[#0F291E]/85 p-6 backdrop-blur-md"
+          className="fixed inset-0 z-[60] grid place-items-center bg-[#0A0B0A]/85 p-6 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -426,25 +524,24 @@ function AgeGate() {
           aria-labelledby="age-title"
         >
           <div className={`${glass} w-full max-w-sm rounded-3xl p-8 text-center`}>
-            <div className="mx-auto mb-5 w-fit">
-              <Logo size={72} />
-            </div>
-            <h2 id="age-title" className="font-display text-2xl">
+            <Logo height={64} className="mx-auto mb-5" />
+            <TriStripe className="mx-auto mb-5" />
+            <h2 id="age-title" className="font-display text-2xl font-semibold">
               Are you 18 or older?
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[#F8F9FA]/65">
+            <p className="mt-2 text-sm leading-relaxed text-[#F7F5EF]/65">
               This site includes cannabis products and is for adults only.
             </p>
             <div className="mt-6 flex flex-col gap-3">
               <button
                 onClick={confirm}
-                className="rounded-full bg-[#D4A373] px-6 py-3 text-sm font-semibold text-[#0F291E] transition hover:bg-[#e0b68b]"
+                className="rounded-full bg-[#F4C430] px-6 py-3 text-sm font-semibold text-[#0A0B0A] transition hover:bg-[#f7d35c]"
               >
                 Yes, enter the site
               </button>
               <a
                 href="https://www.google.com"
-                className="rounded-full border border-[#52796F]/50 px-6 py-3 text-sm text-[#F8F9FA]/75 transition hover:border-[#D4A373]/60"
+                className="rounded-full border border-white/15 px-6 py-3 text-sm text-[#F7F5EF]/75 transition hover:border-[#F4C430]/60"
               >
                 No, leave
               </a>
@@ -471,40 +568,39 @@ function Nav() {
   }, []);
 
   const links: [string, string][] = [
+    ["Locations", "#locations"],
     ["Menu", "#menu"],
     ["Learn", "#knowledge"],
-    ["Visit", "#visit"],
     ["Play", "#play"],
   ];
 
   return (
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-colors duration-300 ${
-        scrolled ? "border-b border-[#52796F]/25 bg-[#0F291E]/80 backdrop-blur-xl" : "bg-transparent"
+        scrolled ? "border-b border-white/10 bg-[#0A0B0A]/80 backdrop-blur-xl" : "bg-transparent"
       }`}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <a href="#top" className="flex items-center gap-3">
-          <Logo size={40} />
-          <span className="font-display text-lg text-[#F8F9FA]">Coastal Herbalist</span>
+        <a href="#top" className="flex items-center" aria-label={`${BRAND} home`}>
+          <Logo height={38} />
         </a>
         <div className="hidden items-center gap-8 md:flex">
           {links.map(([label, href]) => (
             <a
               key={href}
               href={href}
-              className="text-sm text-[#F8F9FA]/70 transition-colors hover:text-[#D4A373]"
+              className="text-sm text-[#F7F5EF]/70 transition-colors hover:text-[#F4C430]"
             >
               {label}
             </a>
           ))}
         </div>
         <a
-          href={PHONE_TEL}
-          className="inline-flex items-center gap-2 rounded-full border border-[#D4A373]/50 px-4 py-2 text-sm text-[#D4A373] transition-colors hover:bg-[#D4A373] hover:text-[#0F291E]"
+          href="#locations"
+          className="inline-flex items-center gap-2 rounded-full border border-[#F4C430]/50 px-4 py-2 text-sm text-[#F4C430] transition-colors hover:bg-[#F4C430] hover:text-[#0A0B0A]"
         >
-          <Phone className="h-4 w-4" />
-          <span className="hidden sm:inline">Call store</span>
+          <MapPin className="h-4 w-4" />
+          <span className="hidden sm:inline">Find a store</span>
         </a>
       </nav>
     </header>
@@ -776,10 +872,10 @@ function FluidSmoke({ targetRef }: { targetRef: RefObject<HTMLElement> }) {
           const id = IX(i, j);
           const a = Math.min(1, d[id]);
           const w = k[id];
-          // cool sage-white mixed toward ochre
-          px[o] = 196 + (212 - 196) * w;
-          px[o + 1] = 214 + (163 - 214) * w;
-          px[o + 2] = 206 + (115 - 206) * w;
+          // smoky white mixed toward warm gold
+          px[o] = 222 + (240 - 222) * w;
+          px[o + 1] = 224 + (196 - 224) * w;
+          px[o + 2] = 218 + (110 - 218) * w;
           px[o + 3] = a * 170;
           o += 4;
         }
@@ -841,118 +937,310 @@ function FluidSmoke({ targetRef }: { targetRef: RefObject<HTMLElement> }) {
 
 function HeroEmblem({ className = "" }: { className?: string }) {
   return (
-    <div className={`relative aspect-square ${className}`} aria-hidden="true">
-      <div
-        className="absolute -inset-[12%] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(82,121,111,0.5) 0%, rgba(82,121,111,0.12) 45%, rgba(15,41,30,0) 70%)",
-        }}
-      />
-      <div className="absolute inset-0 rounded-full border border-[#52796F]/25" />
-      <div className="absolute inset-0 animate-[spin_80s_linear_infinite] motion-reduce:animate-none">
-        <span className="absolute left-1/2 top-0 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4A373] shadow-[0_0_12px_rgba(212,163,115,0.8)]" />
-      </div>
-      <div className="absolute inset-[8%] rounded-full border border-[#D4A373]/20" />
+    <div className={`relative ${className}`} aria-hidden="true">
       <motion.div
-        className="absolute inset-[15%]"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+        className="relative"
+        initial={{ opacity: 0, scale: 0.92, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 1.1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/logo.png"
+          src={LOGO_SRC}
           alt=""
-          className="h-full w-full rounded-full object-cover shadow-[0_0_0_6px_rgba(15,41,30,0.9),0_0_0_7px_rgba(82,121,111,0.45),0_30px_80px_-20px_rgba(0,0,0,0.8),0_0_90px_-10px_rgba(82,121,111,0.55)]"
+          className="h-auto w-full drop-shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
+          draggable={false}
         />
       </motion.div>
     </div>
   );
 }
 
-function Hero({ status }: { status: { open: boolean; label: string } | null }) {
+function Hero() {
   const heroRef = useRef<HTMLElement>(null);
 
+  const stats: [string, string][] = [
+    [String(LOCATION_COUNT), "Locations"],
+    [String(REGIONS.length), "Provinces"],
+    ["24h", "Plumstead flagship"],
+  ];
+
   return (
-    <section ref={heroRef} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0F291E]">
+    <section ref={heroRef} id="top" className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#0A0B0A]">
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse at 20% 0%, rgba(82,121,111,0.38), transparent 60%), radial-gradient(ellipse at 90% 100%, rgba(212,163,115,0.14), transparent 55%)",
+            "radial-gradient(ellipse at 15% 0%, rgba(31,157,72,0.22), transparent 55%), radial-gradient(ellipse at 85% 10%, rgba(244,196,48,0.12), transparent 50%), radial-gradient(ellipse at 50% 120%, rgba(226,35,26,0.14), transparent 55%)",
         }}
       />
       <FluidSmoke targetRef={heroRef} />
-      <LeafSilhouette className="pointer-events-none absolute -right-10 top-24 h-80 w-40 rotate-[24deg] text-[#52796F]/50 sm:h-[26rem] sm:w-52 lg:hidden" />
-      <LeafSilhouette className="pointer-events-none absolute -left-12 bottom-10 h-64 w-32 -rotate-[32deg] text-[#52796F]/30" />
+      {/* After the smoke so the buildings sit in front of it. */}
+      <Skyline className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full text-[#141614] sm:h-56" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-24 pt-32 lg:grid-cols-[1.35fr_1fr]">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-12 px-5 pb-28 pt-32 lg:grid-cols-[1.35fr_1fr]">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           className="max-w-3xl"
         >
-          <HeroEmblem className="mb-8 w-28 sm:w-32 lg:hidden" />
-          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#52796F]/40 bg-[#0F291E]/40 px-4 py-1.5 text-sm text-[#F8F9FA]/75 backdrop-blur">
-            <MapPin className="h-4 w-4 text-[#D4A373]" />
-            Marine Drive, Margate
+          <HeroEmblem className="mb-10 w-56 sm:w-64 lg:hidden" />
+          <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-[#0A0B0A]/40 px-4 py-1.5 text-sm text-[#F7F5EF]/75 backdrop-blur">
+            <MapPin className="h-4 w-4 text-[#F4C430]" />
+            Durban &middot; Cape Town
           </p>
-          <h1 className="font-display text-5xl leading-[1.05] text-[#F8F9FA] sm:text-6xl lg:text-[4.25rem]">
-            Elevated Coastal Wellness &amp; Botanical Craft
+          <h1 className="font-display text-5xl font-semibold leading-[1.02] tracking-tight text-[#F7F5EF] sm:text-6xl lg:text-[4.5rem]">
+            Rise above
+            <br />
+            the <span className="text-[#F4C430]">city.</span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#F8F9FA]/70">
-            Herbal remedies, artisanal teas, topicals and curated cannabis, chosen by people who know
-            the plants. Five minutes from the Lawrence Rocks tidal pools.
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-[#F7F5EF]/70">
+            Members&apos; lounges, bud shops and rooftop spaces across KwaZulu-Natal and the Western
+            Cape. Pull up a seat, take in the view and let the evening slow down.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-3">
             <a
+              href="#locations"
+              className="inline-flex items-center gap-2 rounded-full bg-[#F4C430] px-6 py-3.5 text-sm font-semibold text-[#0A0B0A] transition-colors hover:bg-[#f7d35c]"
+            >
+              <MapPin className="h-4 w-4" />
+              Find your nearest
+            </a>
+            <a
               href="#menu"
-              className="inline-flex items-center gap-2 rounded-full bg-[#D4A373] px-6 py-3.5 text-sm font-semibold text-[#0F291E] transition-colors hover:bg-[#e0b68b]"
+              className={`${glass} inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium text-[#F7F5EF] transition-colors hover:border-[#F4C430]/60`}
             >
-              <Leaf className="h-4 w-4" />
+              <Leaf className="h-4 w-4 text-[#F4C430]" />
               Explore menu
-            </a>
-            <a
-              href={MAPS_DIRECTIONS}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${glass} inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium text-[#F8F9FA] transition-colors hover:border-[#D4A373]/60`}
-            >
-              <Navigation className="h-4 w-4 text-[#D4A373]" />
-              Get directions
-            </a>
-            <a
-              href={PHONE_TEL}
-              className={`${glass} inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-sm font-medium text-[#F8F9FA] transition-colors hover:border-[#D4A373]/60`}
-            >
-              <Phone className="h-4 w-4 text-[#D4A373]" />
-              Call store
             </a>
           </div>
 
-          <div className="mt-10 flex items-center gap-3 text-sm text-[#F8F9FA]/65">
-            <Clock className="h-4 w-4 text-[#52796F]" />
-            {status ? (
-              <span className="inline-flex items-center gap-2">
-                <StatusDot open={status.open} />
-                {status.label}
-              </span>
-            ) : (
-              <span>Open daily, 8:00 AM to 10:00 PM</span>
-            )}
-          </div>
-          <p className="mt-4 hidden text-xs text-[#F8F9FA]/40 motion-reduce:hidden md:block">
+          <dl className="mt-12 flex flex-wrap gap-x-10 gap-y-4">
+            {stats.map(([value, label]) => (
+              <div key={label}>
+                <dt className="sr-only">{label}</dt>
+                <dd>
+                  <span className="block font-display text-3xl font-semibold text-[#F7F5EF]">{value}</span>
+                  <span className="text-xs uppercase tracking-[0.18em] text-[#F7F5EF]/50">{label}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-8 hidden text-xs text-[#F7F5EF]/40 motion-reduce:hidden md:block">
             Move your cursor to stir the smoke. Click for a puff.
           </p>
         </motion.div>
 
-        <HeroEmblem className="mx-auto hidden w-full max-w-[24rem] lg:block" />
+        <HeroEmblem className="mx-auto hidden w-full max-w-[26rem] lg:block" />
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-[#1A1E1C]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#121412]" />
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Locations                                                           */
+/* ------------------------------------------------------------------ */
+
+function LocationsSection() {
+  const [regionId, setRegionId] = useState(REGIONS[0].id);
+  const region = REGIONS.find((r) => r.id === regionId) ?? REGIONS[0];
+  const [selectedId, setSelectedId] = useState(region.locations[0].id);
+  const selected = region.locations.find((l) => l.id === selectedId) ?? region.locations[0];
+
+  const pickRegion = (id: string) => {
+    const next = REGIONS.find((r) => r.id === id) ?? REGIONS[0];
+    setRegionId(next.id);
+    setSelectedId(next.locations[0].id);
+  };
+
+  const features = [
+    {
+      icon: <Users className="h-5 w-5" />,
+      title: "Members' lounges",
+      text: "Comfortable, private spaces to sit back with friends. Ask staff about joining.",
+    },
+    {
+      icon: <Building2 className="h-5 w-5" />,
+      title: "Rooftop sessions",
+      text: "Open-air seating above the street at Isipingo Beach and Claremont.",
+    },
+    {
+      icon: <Moon className="h-5 w-5" />,
+      title: "Open late",
+      text: "Sea Point keeps late hours, and our Plumstead flagship never closes.",
+    },
+  ];
+
+  return (
+    <section id="locations" className="scroll-mt-20 bg-[#121412] py-24">
+      <div className="mx-auto max-w-6xl px-5">
+        <SectionHeading
+          icon={<MapPin className="h-5 w-5" />}
+          title={`${LOCATION_COUNT} spots, two coasts`}
+          intro="From the Durban beachfront to the Cape Town southern suburbs. Every store has its own personality, so find the one that suits your evening."
+        />
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          {features.map((f) => (
+            <div key={f.title} className={`${glass} rounded-2xl p-6`}>
+              <span className="text-[#F4C430]">{f.icon}</span>
+              <p className="mt-4 font-display text-lg font-semibold text-[#F7F5EF]">{f.title}</p>
+              <p className="mt-1 text-sm leading-relaxed text-[#F7F5EF]/60">{f.text}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-12 flex flex-wrap gap-2" role="tablist" aria-label="Regions">
+          {REGIONS.map((r) => {
+            const on = r.id === regionId;
+            return (
+              <button
+                key={r.id}
+                role="tab"
+                aria-selected={on}
+                onClick={() => pickRegion(r.id)}
+                className={`rounded-full border px-5 py-2.5 text-left text-sm transition-colors ${
+                  on
+                    ? "border-[#F4C430] bg-[#F4C430] text-[#0A0B0A]"
+                    : "border-white/15 text-[#F7F5EF]/70 hover:border-white/30 hover:text-[#F7F5EF]"
+                }`}
+              >
+                <span className="font-semibold">{r.title}</span>
+                <span className={on ? "text-[#0A0B0A]/70" : "text-[#F7F5EF]/45"}>
+                  {" "}
+                  &middot; {r.metro} &middot; {r.locations.length}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
+          <AnimatePresence mode="wait">
+            <motion.ul
+              key={region.id}
+              role="tabpanel"
+              initial={{ opacity: 0, filter: "blur(8px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, filter: "blur(8px)" }}
+              transition={{ duration: 0.3 }}
+              className="space-y-3"
+            >
+              {region.locations.map((l, i) => {
+                const on = l.id === selected.id;
+                return (
+                  <motion.li
+                    key={l.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: 0.04 * i }}
+                  >
+                    <button
+                      onClick={() => setSelectedId(l.id)}
+                      aria-pressed={on}
+                      className={`w-full rounded-2xl border p-5 text-left transition-colors ${
+                        on
+                          ? "border-[#F4C430]/70 bg-[#F4C430]/[0.06]"
+                          : "border-white/10 bg-white/[0.02] hover:border-white/25"
+                      }`}
+                    >
+                      <span className="flex items-start justify-between gap-4">
+                        <span>
+                          <span className="block font-display text-xl font-semibold text-[#F7F5EF]">
+                            {l.name}
+                            {l.alias && (
+                              <span className="ml-2 align-middle text-xs font-normal uppercase tracking-[0.14em] text-[#F4C430]/80">
+                                {l.alias}
+                              </span>
+                            )}
+                          </span>
+                          <span className="mt-1 block text-sm text-[#F7F5EF]/60">{fullAddress(l)}</span>
+                        </span>
+                        <span
+                          className={`mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full border transition-colors ${
+                            on ? "border-[#F4C430] bg-[#F4C430] text-[#0A0B0A]" : "border-white/15 text-[#F7F5EF]/50"
+                          }`}
+                        >
+                          <MapPin className="h-3.5 w-3.5" />
+                        </span>
+                      </span>
+                      <span className="mt-3 flex flex-wrap gap-1.5">
+                        {l.tags.map((t) => (
+                          <span
+                            key={t}
+                            className="rounded-full border border-white/10 px-2.5 py-0.5 text-xs text-[#F7F5EF]/65"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </span>
+                    </button>
+                  </motion.li>
+                );
+              })}
+            </motion.ul>
+          </AnimatePresence>
+
+          <div className={`${glass} flex flex-col overflow-hidden rounded-3xl lg:sticky lg:top-24 lg:self-start`}>
+            <div className="relative h-72 sm:h-80">
+              <iframe
+                key={selected.id}
+                title={`Map to ${BRAND} ${selected.name}`}
+                src={embedUrl(fullAddress(selected))}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="absolute inset-0 h-full w-full"
+                style={{ border: 0, filter: "grayscale(0.55) contrast(1.05) brightness(0.85)" }}
+              />
+            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selected.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                className="space-y-4 p-7"
+              >
+                <div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#F7F5EF]/45">
+                    {region.title} &middot; {region.metro}
+                  </p>
+                  <h3 className="mt-2 font-display text-2xl font-semibold text-[#F7F5EF]">
+                    {BRAND} {selected.name}
+                  </h3>
+                  {selected.alias && (
+                    <p className="mt-1 text-sm text-[#F4C430]">Trading as {selected.alias}</p>
+                  )}
+                </div>
+                <p className="text-sm leading-relaxed text-[#F7F5EF]/70">{selected.note}</p>
+                <p className="flex gap-3 text-sm text-[#F7F5EF]">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#F4C430]" />
+                  {fullAddress(selected)}
+                </p>
+                <a
+                  href={directionsUrl(fullAddress(selected))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#F4C430] px-5 py-3 text-sm font-semibold text-[#0A0B0A] transition-colors hover:bg-[#f7d35c]"
+                >
+                  <Navigation className="h-4 w-4" />
+                  Get directions
+                  <ChevronRight className="h-4 w-4" />
+                </a>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <p className="mt-8 text-sm text-[#F7F5EF]/45">
+          Hours and offerings vary by store. Adults 18+ only.
+        </p>
+      </div>
     </section>
   );
 }
@@ -993,7 +1281,7 @@ function MenuSection() {
   };
 
   return (
-    <section id="menu" className="scroll-mt-20 bg-[#1A1E1C] py-24">
+    <section id="menu" className="scroll-mt-20 bg-[#121412] py-24">
       <div className="mx-auto max-w-6xl px-5">
         <SectionHeading
           icon={<Leaf className="h-5 w-5" />}
@@ -1009,15 +1297,15 @@ function MenuSection() {
             className="group flex w-full items-center justify-between gap-6 px-6 py-6 text-left sm:px-8"
           >
             <span>
-              <span className="block font-display text-2xl text-[#F8F9FA]">
+              <span className="block font-display font-semibold text-2xl text-[#F7F5EF]">
                 {open ? "The menu" : "Open the menu"}
               </span>
-              <span className="mt-1 block text-sm text-[#F8F9FA]/55">
+              <span className="mt-1 block text-sm text-[#F7F5EF]/55">
                 {MENU.map((g) => g.title).join(" · ")}
               </span>
             </span>
             <span
-              className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#D4A373]/50 text-[#D4A373] transition-all duration-500 group-hover:bg-[#D4A373] group-hover:text-[#0F291E] ${
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#F4C430]/50 text-[#F4C430] transition-all duration-500 group-hover:bg-[#F4C430] group-hover:text-[#0A0B0A] ${
                 open ? "rotate-180" : ""
               }`}
             >
@@ -1041,7 +1329,7 @@ function MenuSection() {
                   animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
                   exit={{ opacity: 0, filter: "blur(14px)" }}
                   transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="border-t border-[#52796F]/25 px-6 pb-8 pt-6 sm:px-8"
+                  className="border-t border-white/10 px-6 pb-8 pt-6 sm:px-8"
                 >
                   <div className="-mx-6 overflow-x-auto px-6 pb-2 sm:-mx-8 sm:px-8">
                     <div className="flex w-max gap-2" role="tablist" aria-label="Menu categories">
@@ -1058,8 +1346,8 @@ function MenuSection() {
                             }}
                             className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
                               on
-                                ? "border-[#D4A373] bg-[#D4A373] text-[#0F291E]"
-                                : "border-[#52796F]/40 text-[#F8F9FA]/70 hover:border-[#52796F] hover:text-[#F8F9FA]"
+                                ? "border-[#F4C430] bg-[#F4C430] text-[#0A0B0A]"
+                                : "border-white/10 text-[#F7F5EF]/70 hover:border-white/30 hover:text-[#F7F5EF]"
                             }`}
                           >
                             {g.icon}
@@ -1080,7 +1368,7 @@ function MenuSection() {
                       transition={{ duration: 0.35 }}
                       className="mt-6"
                     >
-                      <p className="max-w-2xl text-sm leading-relaxed text-[#F8F9FA]/60">{group.blurb}</p>
+                      <p className="max-w-2xl text-sm leading-relaxed text-[#F7F5EF]/60">{group.blurb}</p>
                       <ul className="mt-5 grid gap-3 sm:grid-cols-2">
                         {group.types.map((t, i) => (
                           <motion.li
@@ -1088,14 +1376,14 @@ function MenuSection() {
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.35, delay: 0.05 * i }}
-                            className="flex gap-4 rounded-2xl bg-[#0F291E]/55 p-4"
+                            className="flex gap-4 rounded-2xl bg-[#0A0B0A]/55 p-4"
                           >
-                            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#52796F]/40 text-[#D4A373]">
+                            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 text-[#F4C430]">
                               <Sparkles className="h-3.5 w-3.5" />
                             </span>
                             <span>
-                              <span className="block font-display text-lg text-[#F8F9FA]">{t.name}</span>
-                              <span className="mt-0.5 block text-sm leading-relaxed text-[#F8F9FA]/60">
+                              <span className="block font-display font-semibold text-lg text-[#F7F5EF]">{t.name}</span>
+                              <span className="mt-0.5 block text-sm leading-relaxed text-[#F7F5EF]/60">
                                 {t.note}
                               </span>
                             </span>
@@ -1105,16 +1393,16 @@ function MenuSection() {
                     </motion.div>
                   </AnimatePresence>
 
-                  <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#52796F]/30 px-5 py-4">
-                    <p className="flex items-center gap-3 text-sm text-[#F8F9FA]/70">
-                      <Store className="h-4 w-4 shrink-0 text-[#D4A373]" />
-                      Strains, stock and prices are available in store only.
+                  <div className="mt-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 px-5 py-4">
+                    <p className="flex items-center gap-3 text-sm text-[#F7F5EF]/70">
+                      <Store className="h-4 w-4 shrink-0 text-[#F4C430]" />
+                      Strains, stock and prices vary by store and are available in store only.
                     </p>
                     <a
-                      href="#visit"
-                      className="inline-flex items-center gap-2 rounded-full bg-[#52796F] px-4 py-2.5 text-sm font-medium text-[#F8F9FA] transition-colors hover:bg-[#5f8b80]"
+                      href="#locations"
+                      className="inline-flex items-center gap-2 rounded-full bg-[#1F9D48] px-4 py-2.5 text-sm font-medium text-[#F7F5EF] transition-colors hover:bg-[#25b553]"
                     >
-                      Visit the shop
+                      Find a store
                       <ChevronRight className="h-4 w-4" />
                     </a>
                   </div>
@@ -1130,7 +1418,7 @@ function MenuSection() {
           />
         </div>
 
-        <p className="mt-8 text-sm text-[#F8F9FA]/45">Adults 18+ only. Please use responsibly.</p>
+        <p className="mt-8 text-sm text-[#F7F5EF]/45">Adults 18+ only. Please use responsibly.</p>
       </div>
     </section>
   );
@@ -1156,9 +1444,9 @@ function Accordion() {
               aria-controls={panelId}
               className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
             >
-              <span className="font-medium text-[#F8F9FA]">{r.title}</span>
+              <span className="font-medium text-[#F7F5EF]">{r.title}</span>
               <ChevronDown
-                className={`h-5 w-5 shrink-0 text-[#D4A373] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                className={`h-5 w-5 shrink-0 text-[#F4C430] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
             <AnimatePresence initial={false}>
@@ -1170,7 +1458,7 @@ function Accordion() {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <div className="space-y-3 px-6 pb-6 text-sm leading-relaxed text-[#F8F9FA]/70">
+                  <div className="space-y-3 px-6 pb-6 text-sm leading-relaxed text-[#F7F5EF]/70">
                     {r.body.map((p) => (
                       <p key={p}>{p}</p>
                     ))}
@@ -1206,7 +1494,7 @@ function KnowledgeSection() {
   ];
 
   return (
-    <section id="knowledge" className="scroll-mt-20 bg-[#0F291E] py-24">
+    <section id="knowledge" className="scroll-mt-20 bg-[#0A0B0A] py-24">
       <div className="mx-auto max-w-6xl px-5">
         <SectionHeading
           icon={<BookOpen className="h-5 w-5" />}
@@ -1217,19 +1505,19 @@ function KnowledgeSection() {
         <div className="mt-12 grid gap-8 lg:grid-cols-5">
           <div className={`${glass} rounded-3xl p-7 lg:col-span-2`}>
             <div className="flex items-center gap-3">
-              <Scale className="h-5 w-5 text-[#D4A373]" />
-              <h3 className="font-display text-xl">The legal framework</h3>
+              <Scale className="h-5 w-5 text-[#F4C430]" />
+              <h3 className="font-display font-semibold text-xl">The legal framework</h3>
             </div>
-            <ol className="mt-6 space-y-5 border-l border-[#52796F]/40 pl-5">
+            <ol className="mt-6 space-y-5 border-l border-white/10 pl-5">
               {legalPoints.map((p) => (
                 <li key={p.title} className="relative">
-                  <span className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-[#D4A373]" />
-                  <p className="text-sm font-semibold text-[#F8F9FA]">{p.title}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-[#F8F9FA]/65">{p.text}</p>
+                  <span className="absolute -left-[25px] top-1.5 h-2 w-2 rounded-full bg-[#F4C430]" />
+                  <p className="text-sm font-semibold text-[#F7F5EF]">{p.title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-[#F7F5EF]/65">{p.text}</p>
                 </li>
               ))}
             </ol>
-            <p className="mt-6 text-xs leading-relaxed text-[#F8F9FA]/45">
+            <p className="mt-6 text-xs leading-relaxed text-[#F7F5EF]/45">
               General information, not legal advice. Regulations are still being finalised, so check
               current rules before relying on them.
             </p>
@@ -1237,7 +1525,7 @@ function KnowledgeSection() {
 
           <div className="lg:col-span-3">
             <Accordion />
-            <p className="mt-5 text-xs leading-relaxed text-[#F8F9FA]/45">
+            <p className="mt-5 text-xs leading-relaxed text-[#F7F5EF]/45">
               Research summaries are educational and not medical advice. Speak to a healthcare
               professional before using cannabis for a health condition.
             </p>
@@ -1248,95 +1536,9 @@ function KnowledgeSection() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Store info                                                          */
-/* ------------------------------------------------------------------ */
-
-function StoreInfo({ status }: { status: { open: boolean; label: string } | null }) {
-  return (
-    <section id="visit" className="scroll-mt-20 bg-[#1A1E1C] py-24">
-      <div className="mx-auto max-w-6xl px-5">
-        <SectionHeading
-          icon={<MapPin className="h-5 w-5" />}
-          title="Visit the shop"
-          intro="On Marine Drive at Lawrence Rocks, open every day of the week."
-        />
-
-        <div className={`${glass} mt-10 grid overflow-hidden rounded-3xl lg:grid-cols-2`}>
-          <div className="space-y-7 p-8">
-            <div className="flex gap-4">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#D4A373]" />
-              <div>
-                <p className="text-sm text-[#F8F9FA]/50">Address</p>
-                <p className="mt-1 text-[#F8F9FA]">
-                  113 Marine Dr, Lawrence Rocks
-                  <br />
-                  Margate, 4285
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <Clock className="mt-0.5 h-5 w-5 shrink-0 text-[#D4A373]" />
-              <div>
-                <p className="text-sm text-[#F8F9FA]/50">Hours</p>
-                <p className="mt-1 text-[#F8F9FA]">Monday to Sunday, 8:00 AM to 10:00 PM</p>
-                {status && (
-                  <p className="mt-2 inline-flex items-center gap-2 text-sm text-[#F8F9FA]/70">
-                    <StatusDot open={status.open} />
-                    {status.label}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <Phone className="mt-0.5 h-5 w-5 shrink-0 text-[#D4A373]" />
-              <div>
-                <p className="text-sm text-[#F8F9FA]/50">Phone and WhatsApp</p>
-                <a href={PHONE_TEL} className="mt-1 block text-[#F8F9FA] hover:text-[#D4A373]">
-                  {PHONE_DISPLAY}
-                </a>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 pt-2">
-              <a
-                href={MAPS_DIRECTIONS}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-[#D4A373] px-5 py-3 text-sm font-semibold text-[#0F291E] transition-colors hover:bg-[#e0b68b]"
-              >
-                <Navigation className="h-4 w-4" />
-                Open in Google Maps
-                <ChevronRight className="h-4 w-4" />
-              </a>
-              <a
-                href={waLink("Hi Coastal Herbalist, I have a question.")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-[#52796F]/50 px-5 py-3 text-sm text-[#F8F9FA] transition-colors hover:border-[#D4A373]/60"
-              >
-                <MessageCircle className="h-4 w-4 text-[#D4A373]" />
-                Message us
-              </a>
-            </div>
-          </div>
-          <div className="relative min-h-[300px] border-t border-[#52796F]/30 lg:border-l lg:border-t-0">
-            <iframe
-              title="Map to Coastal Herbalist"
-              src={MAPS_EMBED}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              className="absolute inset-0 h-full w-full"
-              style={{ border: 0, filter: "grayscale(0.4) contrast(1.05) brightness(0.9)" }}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /* ------------------------------------------------------------------ */
-/* Coastal Leaf Runner (canvas mini-game)                              */
+/* Leaf Runner (canvas mini-game)                                      */
 /* ------------------------------------------------------------------ */
 
 type ObstacleKind = "gust" | "scissors" | "jar";
@@ -1365,7 +1567,7 @@ const PW = 34;
 const PH = 34;
 const GRAVITY = 2400;
 const JUMP_V = -780;
-const HI_KEY = "ch-leaf-runner-hi";
+const HI_KEY = "r420-leaf-runner-hi";
 const OB_SPECS: Record<ObstacleKind, { w: number; h: number }> = {
   gust: { w: 52, h: 26 },
   scissors: { w: 36, h: 32 },
@@ -1606,16 +1808,32 @@ function LeafRunner() {
       ctx.closePath();
     };
 
-    const wave = (base: number, amp: number, freq: number, offset: number, color: string) => {
-      ctx.beginPath();
-      ctx.moveTo(0, GH);
-      for (let x = 0; x <= GW; x += 8) {
-        ctx.lineTo(x, base + Math.sin((x + offset) * freq + s.t * 1.2) * amp);
+    // Repeating city skyline; `seed` varies the building heights per layer.
+    const hash = (n: number) => {
+      const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    const skyline = (base: number, offset: number, seed: number, maxH: number, color: string, lit: boolean) => {
+      const slot = 64;
+      const count = 16;
+      const span = slot * count;
+      for (let i = 0; i < count; i++) {
+        const w = 36 + hash(i + seed) * 26;
+        const h = 24 + hash(i + seed * 7) * maxH;
+        const x = mod(i * slot - offset, span) - slot;
+        if (x > GW) continue;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, base - h, w, h);
+        if (!lit) continue;
+        for (let wy = base - h + 8; wy < base - 6; wy += 10) {
+          for (let wx = 6; wx < w - 6; wx += 9) {
+            if (hash(i * 13 + wx + wy * 3 + seed) > 0.82) {
+              ctx.fillStyle = "rgba(244,196,48,0.35)";
+              ctx.fillRect(x + wx, wy, 3, 4);
+            }
+          }
+        }
       }
-      ctx.lineTo(GW, GH);
-      ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.fill();
     };
 
     const drawLeaf = () => {
@@ -1629,7 +1847,7 @@ function LeafRunner() {
       // ground shadow
       const heightAbove = GROUND - (s.y + PH);
       const shadowW = Math.max(8, 20 - heightAbove * 0.08);
-      ctx.fillStyle = "rgba(15,41,30,0.35)";
+      ctx.fillStyle = "rgba(10,11,10,0.35)";
       ctx.beginPath();
       ctx.ellipse(cx, GROUND + 3, shadowW, 3.5, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -1640,7 +1858,7 @@ function LeafRunner() {
       ctx.rotate(0.55 + rot);
 
       // stem
-      ctx.strokeStyle = COLORS.ochre;
+      ctx.strokeStyle = COLORS.gold;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, 18);
@@ -1649,20 +1867,20 @@ function LeafRunner() {
 
       // blade
       const grad = ctx.createLinearGradient(-14, -20, 14, 20);
-      grad.addColorStop(0, "#7fa89c");
-      grad.addColorStop(1, COLORS.sage);
+      grad.addColorStop(0, "#5fd17f");
+      grad.addColorStop(1, COLORS.green);
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.moveTo(0, -21);
       ctx.bezierCurveTo(17, -10, 16, 10, 0, 19);
       ctx.bezierCurveTo(-16, 10, -17, -10, 0, -21);
       ctx.fill();
-      ctx.strokeStyle = "rgba(248,249,250,0.35)";
+      ctx.strokeStyle = "rgba(247,245,239,0.35)";
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // veins
-      ctx.strokeStyle = "rgba(15,41,30,0.45)";
+      ctx.strokeStyle = "rgba(10,11,10,0.45)";
       ctx.beginPath();
       ctx.moveTo(0, -17);
       ctx.lineTo(0, 17);
@@ -1680,7 +1898,7 @@ function LeafRunner() {
       ctx.beginPath();
       ctx.arc(6, -5, 3.6, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = COLORS.deep;
+      ctx.fillStyle = COLORS.ink;
       ctx.beginPath();
       if (s.mode === "over") {
         ctx.fillRect(4, -5.6, 5, 1.4);
@@ -1694,17 +1912,17 @@ function LeafRunner() {
     const drawObstacle = (o: Obstacle) => {
       if (o.kind === "jar") {
         roundRect(o.x, o.y + 8, o.w, o.h - 8, 6);
-        ctx.fillStyle = "rgba(248,249,250,0.14)";
+        ctx.fillStyle = "rgba(247,245,239,0.14)";
         ctx.fill();
-        ctx.strokeStyle = "rgba(248,249,250,0.55)";
+        ctx.strokeStyle = "rgba(247,245,239,0.55)";
         ctx.lineWidth = 1.5;
         ctx.stroke();
         roundRect(o.x - 2, o.y, o.w + 4, 9, 3);
-        ctx.fillStyle = COLORS.ochre;
+        ctx.fillStyle = COLORS.gold;
         ctx.fill();
-        ctx.fillStyle = COLORS.sage;
+        ctx.fillStyle = COLORS.green;
         ctx.fillRect(o.x + 3, o.y + 20, o.w - 6, 9);
-        ctx.fillStyle = "rgba(248,249,250,0.35)";
+        ctx.fillStyle = "rgba(247,245,239,0.35)";
         ctx.fillRect(o.x + 4, o.y + 12, 3, o.h - 18);
       } else if (o.kind === "scissors") {
         const open = Math.sin(o.wob * 10) * 3;
@@ -1720,20 +1938,20 @@ function LeafRunner() {
         ctx.moveTo(hx2, hy - 4);
         ctx.lineTo(o.x + 6 - open, o.y + 2);
         ctx.stroke();
-        ctx.strokeStyle = COLORS.ochre;
+        ctx.strokeStyle = COLORS.gold;
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.arc(hx1, hy, 5.5, 0, Math.PI * 2);
         ctx.moveTo(hx2 + 5.5, hy);
         ctx.arc(hx2, hy, 5.5, 0, Math.PI * 2);
         ctx.stroke();
-        ctx.fillStyle = COLORS.ochre;
+        ctx.fillStyle = COLORS.gold;
         ctx.beginPath();
         ctx.arc(o.x + o.w / 2, o.y + o.h / 2 + 1, 2.2, 0, Math.PI * 2);
         ctx.fill();
         ctx.lineCap = "butt";
       } else {
-        ctx.strokeStyle = "rgba(248,249,250,0.75)";
+        ctx.strokeStyle = "rgba(247,245,239,0.75)";
         ctx.lineWidth = 2.4;
         ctx.lineCap = "round";
         for (let i = 0; i < 3; i++) {
@@ -1758,42 +1976,57 @@ function LeafRunner() {
     /* ---------- draw ---------- */
     const draw = () => {
       const sky = ctx.createLinearGradient(0, 0, 0, GH);
-      sky.addColorStop(0, COLORS.deep);
+      sky.addColorStop(0, COLORS.ink);
       sky.addColorStop(1, COLORS.char);
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, GW, GH);
 
-      const glow = ctx.createRadialGradient(GW - 110, 62, 0, GW - 110, 62, 120);
-      glow.addColorStop(0, "rgba(212,163,115,0.35)");
-      glow.addColorStop(1, "rgba(212,163,115,0)");
+      // stars
+      ctx.fillStyle = "rgba(247,245,239,0.5)";
+      for (let i = 0; i < 40; i++) {
+        const x = mod(i * 151 - s.bgX * 0.03, GW);
+        const y = 10 + ((i * 67) % 120);
+        const tw = 0.6 + 0.4 * Math.sin(s.t * 2 + i);
+        ctx.globalAlpha = tw;
+        ctx.fillRect(x, y, 1.4, 1.4);
+      }
+      ctx.globalAlpha = 1;
+
+      // moon
+      const glow = ctx.createRadialGradient(GW - 110, 62, 0, GW - 110, 62, 110);
+      glow.addColorStop(0, "rgba(247,245,239,0.22)");
+      glow.addColorStop(1, "rgba(247,245,239,0)");
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, GW, GH);
-      ctx.fillStyle = "rgba(212,163,115,0.8)";
+      ctx.fillStyle = "rgba(247,245,239,0.88)";
       ctx.beginPath();
       ctx.arc(GW - 110, 62, 16, 0, Math.PI * 2);
       ctx.fill();
 
-      wave(GROUND - 46, 7, 0.012, s.bgX * 0.15, "rgba(82,121,111,0.2)");
-      wave(GROUND - 26, 5, 0.02, s.bgX * 0.35, "rgba(82,121,111,0.32)");
+      skyline(GROUND, s.bgX * 0.15, 3, 110, "#191c19", false);
+      skyline(GROUND, s.bgX * 0.35, 11, 70, "#222622", true);
 
-      const sand = ctx.createLinearGradient(0, GROUND, 0, GH);
-      sand.addColorStop(0, "rgba(212,163,115,0.55)");
-      sand.addColorStop(1, "rgba(212,163,115,0.2)");
-      ctx.fillStyle = sand;
+      // rooftop deck with a parapet stripe in the brand colours
+      const deck = ctx.createLinearGradient(0, GROUND, 0, GH);
+      deck.addColorStop(0, "#2a2e2a");
+      deck.addColorStop(1, "#151715");
+      ctx.fillStyle = deck;
       ctx.fillRect(0, GROUND, GW, GH - GROUND);
-      ctx.fillStyle = "rgba(248,249,250,0.35)";
-      ctx.fillRect(0, GROUND, GW, 1.5);
-      ctx.fillStyle = "rgba(26,30,28,0.35)";
-      for (let i = 0; i < 36; i++) {
-        const x = mod(i * 97 - s.bgX, GW + 40) - 20;
-        const y = GROUND + 8 + ((i * 53) % (GH - GROUND - 14));
-        ctx.fillRect(x, y, i % 3 === 0 ? 6 : 3, 1.5);
+      const third = GW / 3;
+      [COLORS.red, COLORS.gold, COLORS.green].forEach((c, i) => {
+        ctx.fillStyle = c;
+        ctx.fillRect(i * third, GROUND, third, 2);
+      });
+      ctx.fillStyle = "rgba(247,245,239,0.08)";
+      for (let i = 0; i < 12; i++) {
+        const x = mod(i * 80 - s.bgX, GW + 80) - 40;
+        ctx.fillRect(x, GROUND + 2, 1.5, GH - GROUND);
       }
 
       for (const o of s.obstacles) drawObstacle(o);
 
       for (const d of s.dust) {
-        ctx.fillStyle = `rgba(212,163,115,${Math.max(0, d.life * 1.6)})`;
+        ctx.fillStyle = `rgba(244,196,48,${Math.max(0, d.life * 1.6)})`;
         ctx.beginPath();
         ctx.arc(d.x, d.y, 2.2, 0, Math.PI * 2);
         ctx.fill();
@@ -1804,9 +2037,9 @@ function LeafRunner() {
       const blink = s.flash > 0 && Math.floor(s.flash * 10) % 2 === 0;
       ctx.font = "600 15px 'Plus Jakarta Sans', system-ui, sans-serif";
       ctx.textAlign = "right";
-      ctx.fillStyle = "rgba(248,249,250,0.5)";
+      ctx.fillStyle = "rgba(247,245,239,0.5)";
       ctx.fillText(`HI ${pad(s.hi)}`, GW - 110, 30);
-      ctx.fillStyle = blink ? COLORS.ochre : "rgba(248,249,250,0.9)";
+      ctx.fillStyle = blink ? COLORS.gold : "rgba(247,245,239,0.9)";
       ctx.fillText(pad(s.score), GW - 24, 30);
       ctx.textAlign = "left";
     };
@@ -1846,22 +2079,22 @@ function LeafRunner() {
   }, []);
 
   return (
-    <section id="play" ref={sectionRef} className="scroll-mt-20 bg-[#0F291E] py-24">
+    <section id="play" ref={sectionRef} className="scroll-mt-20 bg-[#0A0B0A] py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="flex flex-wrap items-end justify-between gap-6">
           <SectionHeading
             icon={<Gamepad2 className="h-5 w-5" />}
-            title="Coastal Leaf Runner"
-            intro="Help the leaf dodge sea breeze gusts, trimming scissors and jars. Press Space or tap the game to jump."
+            title="Leaf Runner"
+            intro="Help the leaf run the rooftops, dodging wind gusts, trimming scissors and jars. Press Space or tap the game to jump."
           />
           <div className="flex items-center gap-3">
-            <p className={`${glass} rounded-full px-4 py-2 text-sm text-[#F8F9FA]/75`}>
-              Best: <span className="font-semibold text-[#D4A373]">{hi}</span>
+            <p className={`${glass} rounded-full px-4 py-2 text-sm text-[#F7F5EF]/75`}>
+              Best: <span className="font-semibold text-[#F4C430]">{hi}</span>
             </p>
             <button
               onClick={() => setMuted((m) => !m)}
               aria-label={muted ? "Turn sound on" : "Mute sound"}
-              className={`${glass} grid h-10 w-10 place-items-center rounded-full text-[#F8F9FA]/80 transition-colors hover:text-[#D4A373]`}
+              className={`${glass} grid h-10 w-10 place-items-center rounded-full text-[#F7F5EF]/80 transition-colors hover:text-[#F4C430]`}
             >
               {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </button>
@@ -1876,7 +2109,7 @@ function LeafRunner() {
             actionRef.current();
           }}
           role="application"
-          aria-label="Coastal Leaf Runner game. Press Space or tap to jump."
+          aria-label="Leaf Runner game. Press Space or tap to jump."
         >
           <canvas
             ref={canvasRef}
@@ -1893,25 +2126,25 @@ function LeafRunner() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                className="absolute inset-0 grid place-items-center bg-[#0F291E]/50 backdrop-blur-[2px]"
+                className="absolute inset-0 grid place-items-center bg-[#0A0B0A]/50 backdrop-blur-[2px]"
               >
                 <div className="px-6 text-center">
                   {mode === "over" ? (
                     <>
-                      <p className="font-display text-2xl text-[#F8F9FA] sm:text-3xl">Blown off course</p>
-                      <p className="mt-1 text-sm text-[#F8F9FA]/70">
+                      <p className="font-display font-semibold text-2xl text-[#F7F5EF] sm:text-3xl">Blown off the roof</p>
+                      <p className="mt-1 text-sm text-[#F7F5EF]/70">
                         Score {finalScore}
                         {finalScore > 0 && finalScore >= hi ? ", a new best" : ""}
                       </p>
                     </>
                   ) : (
-                    <p className="font-display text-2xl text-[#F8F9FA] sm:text-3xl">Ready to run?</p>
+                    <p className="font-display font-semibold text-2xl text-[#F7F5EF] sm:text-3xl">Ready to run?</p>
                   )}
-                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#D4A373] px-5 py-2.5 text-sm font-semibold text-[#0F291E]">
+                  <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#F4C430] px-5 py-2.5 text-sm font-semibold text-[#0A0B0A]">
                     {mode === "over" ? "Play again" : "Start game"}
                     <ChevronRight className="h-4 w-4" />
                   </span>
-                  <p className="mt-3 hidden text-xs text-[#F8F9FA]/55 sm:block">or press Space</p>
+                  <p className="mt-3 hidden text-xs text-[#F7F5EF]/55 sm:block">or press Space</p>
                 </div>
               </motion.div>
             )}
@@ -1922,24 +2155,51 @@ function LeafRunner() {
   );
 }
 
+
 /* ------------------------------------------------------------------ */
 /* Footer & page                                                       */
 /* ------------------------------------------------------------------ */
 
 function Footer() {
   return (
-    <footer className="border-t border-[#52796F]/25 bg-[#1A1E1C] py-12">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <Logo size={44} />
-          <div>
-            <p className="font-display text-lg">Coastal Herbalist</p>
-            <p className="text-sm text-[#F8F9FA]/50">{ADDRESS}</p>
-          </div>
+    <footer className="relative border-t border-white/10 bg-[#0A0B0A] pt-14">
+      <div className="mx-auto grid max-w-6xl gap-10 px-5 pb-12 md:grid-cols-[1.2fr_2fr]">
+        <div>
+          <Logo height={56} />
+          <TriStripe className="mt-5" />
+          <p className="mt-5 max-w-xs text-sm leading-relaxed text-[#F7F5EF]/55">
+            Lounges, bud shops and rooftop spaces across KwaZulu-Natal and the Western Cape.
+          </p>
         </div>
-        <div className="text-sm text-[#F8F9FA]/50 sm:text-right">
+        <div className="grid gap-8 sm:grid-cols-2">
+          {REGIONS.map((r) => (
+            <div key={r.id}>
+              <p className="text-xs uppercase tracking-[0.18em] text-[#F4C430]">{r.title}</p>
+              <ul className="mt-4 space-y-2">
+                {r.locations.map((l) => (
+                  <li key={l.id}>
+                    <a
+                      href={directionsUrl(fullAddress(l))}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-[#F7F5EF]/60 transition-colors hover:text-[#F7F5EF]"
+                    >
+                      {l.name}
+                      <span className="text-[#F7F5EF]/35"> &middot; {l.street}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-sm text-[#F7F5EF]/45 sm:flex-row sm:justify-between">
           <p>For adults 18 and older. Please use responsibly.</p>
-          <p className="mt-1">© {new Date().getFullYear()} Coastal Herbalist, Margate</p>
+          <p>
+            &copy; {new Date().getFullYear()} {BRAND}
+          </p>
         </div>
       </div>
     </footer>
@@ -1947,16 +2207,14 @@ function Footer() {
 }
 
 export default function Page() {
-  const status = useOpenStatus();
-
   return (
-    <main className="min-h-screen bg-[#1A1E1C] text-[#F8F9FA]">
+    <main className="min-h-screen bg-[#121412] text-[#F7F5EF]">
       <AgeGate />
       <Nav />
-      <Hero status={status} />
+      <Hero />
+      <LocationsSection />
       <MenuSection />
       <KnowledgeSection />
-      <StoreInfo status={status} />
       <LeafRunner />
       <Footer />
     </main>
